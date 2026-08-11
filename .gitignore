@@ -1,0 +1,7 @@
+# MacOS
+.DS_Store
+
+# Env
+.env
+settings.json
+*.bak
