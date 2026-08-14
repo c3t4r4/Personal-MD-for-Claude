@@ -8,14 +8,14 @@ Empacota o comando `/init-project` do Claude Code (`~/.claude/CLAUDE.md` + `comm
 
 ## Os 17 arquivos empacotados
 
-| Arquivo | Papel |
-| --- | --- |
-| `CLAUDE.md` | Instruções globais do usuário — `/init-project` as lê na FASE 1, antes de qualquer plano |
-| `commands/init-project.md` | O próprio comando: as 9 fases, modos (`--check`/`--update`/`--rag`/`--regras`), diagramas de decisão |
-| `templates/init-project/_scan.sh` | Script de varredura (capacidades do ambiente, estrutura do projeto) — o único executável do pacote |
-| `templates/init-project/_capacidades.md` | O que fazer quando falta MCP `claude-mem`, skill `graphify`, agentes do harness ou `ui-ux-pro-max` |
-| `templates/init-project/_checklist-entrevista.md` | Checklist de cobertura da entrevista com o usuário |
-| `templates/init-project/_varredura-regras.md` | Procedimento do modo `--regras` (varredura profunda de código) |
+| Arquivo                                            | Papel                                                                                                                                                                                                               |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CLAUDE.md`                                        | Instruções globais do usuário — `/init-project` as lê na FASE 1, antes de qualquer plano                                                                                                                            |
+| `commands/init-project.md`                         | O próprio comando: as 9 fases, modos (`--check`/`--update`/`--rag`/`--regras`), diagramas de decisão                                                                                                                |
+| `templates/init-project/_scan.sh`                  | Script de varredura (capacidades do ambiente, estrutura do projeto) — o único executável do pacote                                                                                                                  |
+| `templates/init-project/_capacidades.md`           | O que fazer quando falta MCP `claude-mem`, skill `graphify`, agentes do harness ou `ui-ux-pro-max`                                                                                                                  |
+| `templates/init-project/_checklist-entrevista.md`  | Checklist de cobertura da entrevista com o usuário                                                                                                                                                                  |
+| `templates/init-project/_varredura-regras.md`      | Procedimento do modo `--regras` (varredura profunda de código)                                                                                                                                                      |
 | `templates/init-project/*.md.tpl.md` (11 arquivos) | Templates de `CLAUDE.md`, `RegrasNegocio.md`, `Arquitetura.md`, `RAG.md`, `Harness.md`, `Progresso.md`, `Memoria.md`, `API.md`, `Frontend.md`, `Auth.md`, `Infraestrutura.md` — gerados a cada projeto inicializado |
 
 ## Os dois scripts
@@ -24,7 +24,7 @@ Empacota o comando `/init-project` do Claude Code (`~/.claude/CLAUDE.md` + `comm
 
 Roda na máquina de **origem** (onde o `/init-project` já está configurado).
 
-1. Confere que os 17 arquivos existem em `~/.claude`.
+1. Confere que os 18 arquivos existem em `~/.claude`.
 2. Copia tudo para uma pasta temporária, preservando a estrutura de diretórios e o bit executável de `_scan.sh`.
 3. Substitui `dist/init-project/` inteira pelo conteúdo novo.
 
@@ -39,7 +39,7 @@ Cada execução **sobrescreve** `dist/init-project/` — não guarda versões an
 Roda na máquina de **destino** (nova ou já existente).
 
 1. Recebe o caminho de uma pasta de pacote (ou usa `dist/init-project/` por padrão, se nenhum caminho for informado).
-2. Confere que os 17 arquivos esperados estão presentes na pasta.
+2. Confere que os 18 arquivos esperados estão presentes na pasta.
 3. Copia arquivo por arquivo:
    - Se o destino não existe: instala direto.
    - Se já existe e é idêntico: avisa e ainda assim pergunta (nunca assume).
@@ -71,5 +71,5 @@ Qualquer coisa ausente aparece no relatório como `ausente`/`indisponivel`, nunc
 ## Garantias de segurança
 
 - Nunca sobrescreve um arquivo existente sem confirmação explícita (ou pula com segurança quando não há terminal interativo).
-- Checa a integridade dos 17 arquivos antes de instalar qualquer coisa — aborta sem copiar nada se faltar algum.
+- Checa a integridade dos 18 arquivos antes de instalar qualquer coisa — aborta sem copiar nada se faltar algum.
 - Nenhuma etapa depende de rede, exceto a instalação opcional dos componentes listados no relatório final (decisão do usuário, não automática).

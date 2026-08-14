@@ -17,7 +17,7 @@ Garantir que toda tarefa relevante seja planejada, implementada, validada, testa
 9. Security Specialist.
 10. Correções, se necessárias.
 11. Nova validação.
-12. Sincronização obrigatória de documentação — os dez documentos avaliados, os impactados atualizados ou criados, os demais declarados `sem alteração` ou `n/a`.
+12. Sincronização obrigatória de documentação — os onze documentos avaliados, os impactados atualizados ou criados, os demais declarados `sem alteração` ou `n/a`.
 
 ## Quem executa cada papel
 
@@ -61,7 +61,7 @@ Responsabilidades:
 - Criar um plano curto em `.claude/plans/`.
 - Identificar riscos técnicos e de segurança.
 - Listar os IDs das regras que serão criadas ou alteradas.
-- Preencher no plano a seção `## Sincronização de documentação` com o estado **previsto** dos dez documentos.
+- Preencher no plano a seção `## Sincronização de documentação` com o estado **previsto** dos onze documentos.
 - Definir critérios de aceite.
 
 O nome do plano deve seguir:
@@ -92,6 +92,7 @@ Conforme a seção `Sincronização obrigatória de documentação` de `~/.claud
 | --- | --- | --- |
 | `docs/RegrasNegocio.md` | comportamento, validação, permissão, máquina de estado ou regra de cálculo mudou | `sem alteração` |
 | `docs/Arquitetura.md` | camada, módulo, padrão, dependência, fluxo de dados, schema ou decisão arquitetural mudou | `sem alteração` |
+| `docs/Organograma.md` | módulo, camada, fluxo de negócio, tela, integração externa ou relação entre componentes mudou de forma que o diagrama fique desatualizado | `sem alteração` |
 | `docs/Infraestrutura.md` | Docker, Compose, deploy, rede, volume, variável de ambiente, build ou observabilidade mudou | `sem alteração` / `n/a` |
 | `docs/API.md` | rota, método, payload, header, código HTTP, autenticação de endpoint, paginação ou filtro mudou | `sem alteração` / `n/a` |
 | `docs/Frontend.md` | componente, tela, rota de UI, token de design, padrão de estado ou acessibilidade mudou | `sem alteração` / `n/a` |
@@ -112,6 +113,7 @@ Verificar:
 - Aderência às regras de negócio documentadas.
 - Se houve mudança de comportamento sem regra correspondente registrada.
 - Se regras novas têm ID, status e rastreabilidade.
+- Se `docs/Organograma.md` foi tocado, se o diagrama Mermaid ainda reflete a lógica real do projeto, sem nós inventados ou defasados.
 - A tabela de sincronização **contra o diff real**, rejeitando quando: a tabela estiver ausente ou incompleta; um `sem alteração` for desmentido pelo diff; um documento condicional cujo gatilho disparou não tiver sido criado; `docs/Progresso.md` não tiver a linha da tarefa; um documento `atualizado` não tiver linha no `## Histórico`.
 - Qualidade.
 - Tratamento de erros.
@@ -286,7 +288,7 @@ A tarefa somente está concluída quando:
 - Tester = `APPROVED`;
 - Security Specialist = `APPROVED`;
 - testes aplicáveis foram executados;
-- a sincronização obrigatória de documentação foi concluída, com os dez documentos avaliados e a tabela preenchida com o estado real.
+- a sincronização obrigatória de documentação foi concluída, com os onze documentos avaliados e a tabela preenchida com o estado real.
 
 Nenhum documento pode ficar sem estado declarado. `sem alteração` é resposta válida; omissão não é.
 

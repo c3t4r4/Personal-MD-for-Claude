@@ -38,7 +38,7 @@ Instruções globais e documentação local verificadas. Iniciando a análise do
 
 `/init-project` **cria e audita** a estrutura de governança. Ele não é o que mantém a documentação em dia.
 
-A manutenção contínua é regida pela seção `Sincronização obrigatória de documentação` de `~/.claude/CLAUDE.md`: ao fim de **toda** implementação, os dez documentos são avaliados pela tabela de gatilhos e cada um recebe um estado explícito — `atualizado`, `criado`, `sem alteração` ou `n/a`. Documento condicional ausente cujo gatilho disparou é criado na hora, a partir do template correspondente, sem esperar por este comando.
+A manutenção contínua é regida pela seção `Sincronização obrigatória de documentação` de `~/.claude/CLAUDE.md`: ao fim de **toda** implementação, os onze documentos são avaliados pela tabela de gatilhos e cada um recebe um estado explícito — `atualizado`, `criado`, `sem alteração` ou `n/a`. Documento condicional ausente cujo gatilho disparou é criado na hora, a partir do template correspondente, sem esperar por este comando.
 
 Se a auditoria deste comando encontrar documentação defasada, isso é sintoma de sincronização não executada — reportar como tal, e não apenas corrigir.
 
@@ -151,14 +151,15 @@ Ler, nesta ordem:
 2. `./CLAUDE.md`
 3. `./docs/RegrasNegocio.md`
 4. `./docs/Arquitetura.md`
-5. `./docs/Infraestrutura.md`
-6. `./docs/API.md`
-7. `./docs/Frontend.md`
-8. `./docs/Auth.md`
-9. `./docs/RAG.md`
-10. `./docs/Progresso.md`
-11. `./docs/Memoria.md`
-12. `./docs/Harness.md`
+5. `./docs/Organograma.md`
+6. `./docs/Infraestrutura.md`
+7. `./docs/API.md`
+8. `./docs/Frontend.md`
+9. `./docs/Auth.md`
+10. `./docs/RAG.md`
+11. `./docs/Progresso.md`
+12. `./docs/Memoria.md`
+13. `./docs/Harness.md`
 
 Ler apenas os que existirem. Se algum não puder ser lido, informar o motivo e seguir.
 
@@ -217,6 +218,7 @@ Classificar cada item de governança:
 CLAUDE.md
 docs/RegrasNegocio.md
 docs/Arquitetura.md
+docs/Organograma.md
 docs/RAG.md
 docs/Harness.md
 docs/Progresso.md
@@ -366,6 +368,7 @@ Estado **previsto** de cada documento ao fim desta tarefa. Seção obrigatória 
 | --- | --- | --- |
 | `docs/RegrasNegocio.md` | [atualizado / criado / sem alteração / n/a] | [GATILHO OU AUSÊNCIA DE GATILHO] |
 | `docs/Arquitetura.md` | [ESTADO] | [MOTIVO] |
+| `docs/Organograma.md` | [ESTADO] | [MOTIVO] |
 | `docs/Infraestrutura.md` | [ESTADO] | [MOTIVO] |
 | `docs/API.md` | [ESTADO] | [MOTIVO] |
 | `docs/Frontend.md` | [ESTADO] | [MOTIVO] |
@@ -401,6 +404,7 @@ Cada template é um arquivo próprio em `~/.claude/templates/init-project/`, no 
 | `CLAUDE.md` | `CLAUDE.md.tpl.md` | Sempre |
 | `docs/RegrasNegocio.md` | `RegrasNegocio.md.tpl.md` | Sempre |
 | `docs/Arquitetura.md` | `Arquitetura.md.tpl.md` | Sempre |
+| `docs/Organograma.md` | `Organograma.md.tpl.md` | Sempre |
 | `docs/RAG.md` | `RAG.md.tpl.md` | Sempre |
 | `docs/Harness.md` | `Harness.md.tpl.md` | Sempre |
 | `docs/Progresso.md` | `Progresso.md.tpl.md` | Sempre |
@@ -483,6 +487,7 @@ Proibido, sem exceção: `git reset` destrutivo, remoção de branch, alteraçã
 - [ ] Nenhum secret foi gravado
 - [ ] `docs/RAG.md` reflete o estado real da indexação
 - [ ] `docs/RegrasNegocio.md` tem índice de telas e entidades detectadas
+- [ ] `docs/Organograma.md` existe e seus diagramas Mermaid refletem a lógica real do projeto, sem nós de exemplo ou placeholders esquecidos
 - [ ] `CLAUDE.md` gerado tem a seção `Sincronização de documentação` com a tabela de gatilhos e o estado inicial dos condicionais preenchido
 - [ ] `docs/Harness.md` gerado tem a tabela de sincronização no Coder e a verificação correspondente no Validator
 - [ ] Plano salvo em `.claude/plans/`, com a seção `Sincronização de documentação` preenchida

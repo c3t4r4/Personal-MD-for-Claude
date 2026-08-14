@@ -8,14 +8,15 @@ Antes de qualquer plano, leitura de código, comando ou alteração:
 2. `./CLAUDE.md` (este arquivo)
 3. `./docs/RegrasNegocio.md`
 4. `./docs/Arquitetura.md`
-5. `./docs/Infraestrutura.md`, se existir
-6. `./docs/API.md`, se existir
-7. `./docs/Frontend.md`, se existir
-8. `./docs/Auth.md`, se existir
-9. `./docs/RAG.md`
-10. `./docs/Progresso.md`
-11. `./docs/Memoria.md`
-12. `./docs/Harness.md`
+5. `./docs/Organograma.md`
+6. `./docs/Infraestrutura.md`, se existir
+7. `./docs/API.md`, se existir
+8. `./docs/Frontend.md`, se existir
+9. `./docs/Auth.md`, se existir
+10. `./docs/RAG.md`
+11. `./docs/Progresso.md`
+12. `./docs/Memoria.md`
+13. `./docs/Harness.md`
 
 ## Regras obrigatórias
 
@@ -72,7 +73,7 @@ Antes de qualquer plano, leitura de código, comando ou alteração:
 
 Regra herdada de `~/.claude/CLAUDE.md`, seção `Sincronização obrigatória de documentação`, que é a fonte única. Replicada aqui para leitura sem o arquivo global à mão.
 
-Toda tarefa que altere código, configuração, schema, API, autenticação, infraestrutura ou documentação técnica somente está concluída depois que os dez documentos abaixo forem avaliados e cada um receber um estado explícito: `atualizado`, `criado`, `sem alteração` ou `n/a`.
+Toda tarefa que altere código, configuração, schema, API, autenticação, infraestrutura ou documentação técnica somente está concluída depois que os onze documentos abaixo forem avaliados e cada um receber um estado explícito: `atualizado`, `criado`, `sem alteração` ou `n/a`.
 
 A sincronização é etapa de **toda implementação**. `/init-project` cria e audita a estrutura; ele não é o mecanismo de manutenção.
 
@@ -80,6 +81,7 @@ A sincronização é etapa de **toda implementação**. `/init-project` cria e a
 | --- | --- | --- |
 | `docs/RegrasNegocio.md` | comportamento, validação, permissão, máquina de estado ou regra de cálculo mudou | `sem alteração` |
 | `docs/Arquitetura.md` | camada, módulo, padrão, dependência, fluxo de dados, schema ou decisão arquitetural mudou | `sem alteração` |
+| `docs/Organograma.md` | módulo, camada, fluxo de negócio, tela, integração externa ou relação entre componentes mudou de forma que o diagrama fique desatualizado | `sem alteração` |
 | `docs/Infraestrutura.md` | Docker, Compose, deploy, rede, volume, variável de ambiente, build ou observabilidade mudou | `sem alteração` / `n/a` |
 | `docs/API.md` | rota, método, payload, header, código HTTP, autenticação de endpoint, paginação ou filtro mudou | `sem alteração` / `n/a` |
 | `docs/Frontend.md` | componente, tela, rota de UI, token de design, padrão de estado ou acessibilidade mudou | `sem alteração` / `n/a` |
@@ -145,6 +147,7 @@ Documentos permanentes — sempre existem e sempre entram na sincronização:
 
 - Regras de negócio: `docs/RegrasNegocio.md`
 - Arquitetura: `docs/Arquitetura.md`
+- Organograma: `docs/Organograma.md`
 - RAG: `docs/RAG.md`
 - Harness: `docs/Harness.md`
 - Progresso: `docs/Progresso.md`

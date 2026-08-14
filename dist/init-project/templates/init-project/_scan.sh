@@ -302,7 +302,7 @@ scan_projeto() {
   echo ".claude/plans/: $(existe .claude/plans)"
   echo ".claude/settings.local.json: $(existe .claude/settings.local.json)"
   echo "README.md: $(existe README.md)"
-  for d in RegrasNegocio Arquitetura RAG Harness Progresso Memoria API Frontend Auth Infraestrutura; do
+  for d in RegrasNegocio Arquitetura Organograma RAG Harness Progresso Memoria API Frontend Auth Infraestrutura; do
     echo "docs/$d.md: $(existe "docs/$d.md")"
   done
 
@@ -390,7 +390,7 @@ scan_sessao() {
   echo "arquivos_de_teste: $(printf '%s\n' "$dados" | _campo arquivos_de_teste)"
 
   v=""
-  for d in "CLAUDE.md" "docs/RegrasNegocio.md" "docs/Arquitetura.md" "docs/Progresso.md"; do
+  for d in "CLAUDE.md" "docs/RegrasNegocio.md" "docs/Arquitetura.md" "docs/Organograma.md" "docs/Progresso.md"; do
     [ "$(printf '%s\n' "$dados" | _campo "$d")" = "presente" ] && v="$v $d"
   done
   echo "governanca:${v:- nenhuma (considere /init-project)}"

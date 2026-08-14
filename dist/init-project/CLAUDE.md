@@ -102,14 +102,15 @@ Depois de ler o arquivo global, seguir esta ordem:
 2. `./CLAUDE.md`
 3. `./docs/RegrasNegocio.md`
 4. `./docs/Arquitetura.md`
-5. `./docs/Infraestrutura.md`, se existir
-6. `./docs/API.md`, se existir
-7. `./docs/Frontend.md`, se existir
-8. `./docs/Auth.md`, se existir
-9. `./docs/RAG.md`, se existir
-10. `./docs/Progresso.md`
-11. `./docs/Memoria.md`
-12. `./docs/Harness.md`
+5. `./docs/Organograma.md`
+6. `./docs/Infraestrutura.md`, se existir
+7. `./docs/API.md`, se existir
+8. `./docs/Frontend.md`, se existir
+9. `./docs/Auth.md`, se existir
+10. `./docs/RAG.md`, se existir
+11. `./docs/Progresso.md`
+12. `./docs/Memoria.md`
+13. `./docs/Harness.md`
 
 Se o `CLAUDE.md` local definir uma ordem mais específica, respeitá-la depois da leitura deste arquivo global.
 
@@ -175,7 +176,7 @@ Registrar em `docs/RegrasNegocio.md`, e não em `docs/Memoria.md`: fluxos de tel
 
 Esta seção é a **fonte única** da regra. A tabela de gatilhos é replicada, palavra por palavra, em `templates/init-project/CLAUDE.md.tpl.md` e `templates/init-project/Harness.md.tpl.md`, para que um projeto seja legível sem o arquivo global à mão; `commands/init-project.md` apenas aponta para cá e replica a tabela do plano. Ao alterar a tabela aqui, propagar às cópias na mesma tarefa.
 
-Toda tarefa que altere código, configuração, schema, API, autenticação, infraestrutura ou documentação técnica somente está concluída depois que os dez documentos de governança forem avaliados e cada um receber um estado explícito: `atualizado`, `criado`, `sem alteração` ou `n/a`.
+Toda tarefa que altere código, configuração, schema, API, autenticação, infraestrutura ou documentação técnica somente está concluída depois que os onze documentos de governança forem avaliados e cada um receber um estado explícito: `atualizado`, `criado`, `sem alteração` ou `n/a`.
 
 A sincronização é etapa de **toda implementação**. `/init-project` cria e audita a estrutura; ele não é o mecanismo de manutenção. Documentação desatualizada nunca deve esperar pela próxima execução daquele comando.
 
@@ -185,6 +186,7 @@ A sincronização é etapa de **toda implementação**. `/init-project` cria e a
 | ------------------------ | ----------------------------------------------------------------------------------------------- | ----------------------- |
 | `docs/RegrasNegocio.md`  | comportamento, validação, permissão, máquina de estado ou regra de cálculo mudou                | `sem alteração`         |
 | `docs/Arquitetura.md`    | camada, módulo, padrão, dependência, fluxo de dados, schema ou decisão arquitetural mudou       | `sem alteração`         |
+| `docs/Organograma.md`    | módulo, camada, fluxo de negócio, tela, integração externa ou relação entre componentes mudou de forma que o diagrama fique desatualizado | `sem alteração`         |
 | `docs/Infraestrutura.md` | Docker, Compose, deploy, rede, volume, variável de ambiente, build ou observabilidade mudou     | `sem alteração` / `n/a` |
 | `docs/API.md`            | rota, método, payload, header, código HTTP, autenticação de endpoint, paginação ou filtro mudou | `sem alteração` / `n/a` |
 | `docs/Frontend.md`       | componente, tela, rota de UI, token de design, padrão de estado ou acessibilidade mudou         | `sem alteração` / `n/a` |
@@ -204,7 +206,7 @@ A sincronização é etapa de **toda implementação**. `/init-project` cria e a
 
 ### Onde a tabela aparece
 
-O mesmo conjunto de dez linhas é preenchido três vezes, com propósitos diferentes:
+O mesmo conjunto de onze linhas é preenchido três vezes, com propósitos diferentes:
 
 1. **No plano**, pelo Planner, com o estado **previsto**.
 2. **Na implementação**, pelo Coder, com o estado **real**.
@@ -340,6 +342,7 @@ Estado **previsto** de cada documento ao fim desta tarefa. Seção obrigatória 
 | ------------------------ | ------------------------------------------- | -------------------------------- |
 | `docs/RegrasNegocio.md`  | [atualizado / criado / sem alteração / n/a] | [GATILHO OU AUSÊNCIA DE GATILHO] |
 | `docs/Arquitetura.md`    | [ESTADO]                                    | [MOTIVO]                         |
+| `docs/Organograma.md`    | [ESTADO]                                    | [MOTIVO]                         |
 | `docs/Infraestrutura.md` | [ESTADO]                                    | [MOTIVO]                         |
 | `docs/API.md`            | [ESTADO]                                    | [MOTIVO]                         |
 | `docs/Frontend.md`       | [ESTADO]                                    | [MOTIVO]                         |
@@ -385,7 +388,7 @@ A tarefa somente estará concluída quando:
 - Tester retornar `APPROVED`;
 - Security Specialist retornar `APPROVED`;
 - os testes aplicáveis forem executados;
-- a sincronização obrigatória de documentação estiver concluída, com os dez documentos avaliados e a tabela de gatilhos preenchida com o estado real.
+- a sincronização obrigatória de documentação estiver concluída, com os onze documentos avaliados e a tabela de gatilhos preenchida com o estado real.
 
 Nenhum documento pode ficar sem estado declarado. `sem alteração` é resposta válida; omissão não é.
 
@@ -414,7 +417,7 @@ O Planner deve:
 - Identificar impactos em API, frontend, autenticação, banco e infraestrutura.
 - Definir critérios objetivos de aceite.
 - Criar plano curto em `.claude/plans/`.
-- Preencher a seção `## Sincronização de documentação` do plano com o estado **previsto** dos dez documentos, indicando quais serão criados por gatilho em documento condicional ausente.
+- Preencher a seção `## Sincronização de documentação` do plano com o estado **previsto** dos onze documentos, indicando quais serão criados por gatilho em documento condicional ausente.
 
 Não iniciar implementação antes de concluir o plano.
 
@@ -434,7 +437,7 @@ O Coder deve:
 - Consultar `docs/Auth.md` antes de alterar autenticação.
 - Consultar `docs/Infraestrutura.md` antes de alterar Docker ou deploy.
 - Criar ou atualizar testes.
-- Executar a sincronização obrigatória de documentação ao fim da implementação, percorrendo os dez documentos da tabela de gatilhos.
+- Executar a sincronização obrigatória de documentação ao fim da implementação, percorrendo os onze documentos da tabela de gatilhos.
 - Criar o documento condicional ausente cujo gatilho disparou, a partir do template correspondente.
 - Preencher a tabela de sincronização com o estado **real**, e não com o previsto pelo plano; divergência entre previsto e real deve ser explicada.
 - Não incluir segredos.
@@ -734,6 +737,20 @@ Quando houver armazenamento local de senhas:
 
 Argon2id é hashing de senha. Não deve ser tratado como criptografia reversível de dados.
 
+### Inspeção de arquivos `.env`
+
+Nunca despejar um arquivo `.env` (ou variantes: `.env.local`, `.env.production`, etc.) inteiro no terminal — nem com `cat`, nem com `sed`, `awk`, `grep`, `head`, `tail`, `more`, `less`, nem qualquer outro comando que imprima o conteúdo por completo. O valor de uma variável, uma vez impresso, fica no histórico/log da sessão.
+
+Para conferir a estrutura de um `.env` sem expor valores, listar só os **nomes** das variáveis:
+
+```bash
+grep -o '^[A-Za-z_][A-Za-z0-9_]*=' .env
+```
+
+Regras globais de permissão (`~/.claude/settings.json`, `permissions.deny`) bloqueiam a ferramenta `Read` para `.env`/variantes e adicionam uma camada best-effort contra os idiomas de Bash mais comuns de dump de arquivo — isso não é garantia completa (`Bash(*)` permanece liberado), então a disciplina acima continua sendo a proteção principal. `.env.example`/`.env.sample`/`.env.template` não são afetados (são templates sem segredo).
+
+Se qualquer credencial for exibida por acidente em um terminal/chat/log, tratar como comprometida e recomendar rotação assim que possível.
+
 ---
 
 ## Git
@@ -810,7 +827,7 @@ Ao concluir uma tarefa, informar:
 - Resultado do Validator.
 - Resultado do Tester.
 - Resultado do Security Specialist.
-- Tabela de sincronização de documentação, com o estado real dos dez documentos — inclusive os `sem alteração` e os `n/a`.
+- Tabela de sincronização de documentação, com o estado real dos onze documentos — inclusive os `sem alteração` e os `n/a`.
 - Pendências, incluindo regras `⚠ inferida` aguardando confirmação.
 - Riscos conhecidos.
 - Sugestões não aplicadas.

@@ -36,6 +36,7 @@ FILES=(
   "templates/init-project/Harness.md.tpl.md"
   "templates/init-project/Infraestrutura.md.tpl.md"
   "templates/init-project/Memoria.md.tpl.md"
+  "templates/init-project/Organograma.md.tpl.md"
   "templates/init-project/Progresso.md.tpl.md"
   "templates/init-project/RAG.md.tpl.md"
   "templates/init-project/RegrasNegocio.md.tpl.md"
