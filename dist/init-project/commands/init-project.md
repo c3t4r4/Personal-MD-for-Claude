@@ -123,6 +123,8 @@ Este modo **não é cacheado**, de propósito: a invalidação natural seria o m
 
 E tentar `list_corpora` — a única capacidade que o script não consegue verificar, por ser MCP.
 
+Esta chamada e a tentativa de `list_corpora` não dependem de nada da FASE 1 (nem o contrário) — emitir junto com as leituras da FASE 1 na mesma mensagem, em vez de esperar uma fase terminar para começar a outra.
+
 Montar a tabela e apresentá-la:
 
 | Capacidade | Uso | Se faltar |
@@ -164,6 +166,8 @@ Ler, nesta ordem:
 Ler apenas os que existirem. Se algum não puder ser lido, informar o motivo e seguir.
 
 Não ler nem executar arquivos desconhecidos sem necessidade.
+
+Nenhuma destas leituras depende do resultado de outra: emitir todas em lote, como chamadas paralelas na mesma mensagem, em vez de uma leitura sequencial por vez.
 
 ---
 

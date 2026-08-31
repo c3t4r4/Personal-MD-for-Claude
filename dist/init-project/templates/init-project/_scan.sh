@@ -204,19 +204,23 @@ scan_projeto() {
   echo
   echo "[MANIFESTOS]"
   # shellcheck disable=SC2086
-  find . -maxdepth 3 \( $PRUNE \) -prune -o -type f \( \
+  local manifestos
+  manifestos=$(find . -maxdepth 3 \( $PRUNE \) -prune -o -type f \( \
       -name package.json -o -name requirements.txt -o -name pyproject.toml \
       -o -name go.mod -o -name Cargo.toml -o -name composer.json -o -name Gemfile \
       -o -name '*.csproj' -o -name pom.xml -o -name build.gradle -o -name build.gradle.kts \
-    \) -print 2>/dev/null | sed 's|^\./||' | sort
+    \) -print 2>/dev/null | sed 's|^\./||' | sort)
+  [ -n "$manifestos" ] && printf '%s\n' "$manifestos"
 
   echo
   echo "[LOCKS]"
   # shellcheck disable=SC2086
-  find . -maxdepth 3 \( $PRUNE \) -prune -o -type f \( \
+  local locks
+  locks=$(find . -maxdepth 3 \( $PRUNE \) -prune -o -type f \( \
       -name package-lock.json -o -name yarn.lock -o -name pnpm-lock.yaml \
       -o -name bun.lockb -o -name poetry.lock -o -name Cargo.lock -o -name composer.lock \
-    \) -print 2>/dev/null | sed 's|^\./||' | sort
+    \) -print 2>/dev/null | sed 's|^\./||' | sort)
+  [ -n "$locks" ] && printf '%s\n' "$locks"
 
   echo
   echo "[DOCKER]"
@@ -257,8 +261,16 @@ scan_projeto() {
       -o -name 'test_*.py' -o -name '*_test.rs' -o -name '*Test.java' \
     \) -print 2>/dev/null | wc -l | tr -d ' ')
   echo "arquivos_de_teste: $n_test"
-  if grep -rlsq --include='*.rs' '#\[cfg(test)\]' . 2>/dev/null; then
-    echo "testes_inline_rust: sim"
+  # Só varre em busca de teste inline Rust se o projeto já deu sinal de ser
+  # Rust (Cargo.toml/Cargo.lock encontrado acima) — evita percorrer a árvore
+  # inteira (inclusive node_modules/.git, sem exclusão nesta chamada) em todo
+  # projeto não-Rust. --exclude-dir é defesa adicional para quando roda.
+  if printf '%s\n%s\n' "$manifestos" "$locks" | grep -q 'Cargo\.'; then
+    if grep -rlsq --include='*.rs' \
+        --exclude-dir={node_modules,.git,target,dist,build,.next,vendor,venv,.venv,__pycache__,graphify-out,coverage} \
+        '#\[cfg(test)\]' . 2>/dev/null; then
+      echo "testes_inline_rust: sim"
+    fi
   fi
 
   echo
