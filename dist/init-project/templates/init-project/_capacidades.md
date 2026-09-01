@@ -25,6 +25,25 @@ Instalar:
 
 Sem ele, a FASE 7 não constrói corpus nenhum e o protocolo *retrieval-first* de `docs/RAG.md` passa a começar direto pelo `docs/RegrasNegocio.md` e pela busca textual.
 
+## Skill `archify` (indispensável)
+
+| | |
+| --- | --- |
+| Para que serve | Gerar e manter `docs/arquitetura.html`, versão navegável em HTML da arquitetura descrita em `docs/Arquitetura.md` |
+| Como detectar | `_scan.sh capacidades`, seção `[SKILLS]` (lista qualquer skill instalada genericamente, sem necessidade de checagem específica) |
+| Fallback | Pular a geração/atualização do HTML. Registrar a pendência em `docs/RAG.md` e no resumo final |
+
+Diferente de `graphify`, esta não é opcional: é um passo sempre tentado na
+FASE 6 e a cada gatilho de `docs/Arquitetura.md` na sincronização contínua.
+Ausência ainda **degrada, nunca interrompe** — o comando conclui normalmente,
+só sem o HTML.
+
+Instalar:
+
+```text
+npx -y skills add tt-a1i/archify --skill archify --agent claude-code --global --copy --yes
+```
+
 ## Skill `graphify`
 
 | | |

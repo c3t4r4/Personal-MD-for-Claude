@@ -1,5 +1,9 @@
 # Arquitetura — [NOME DO PROJETO]
 
+Companion renderizado: `docs/arquitetura.html`, gerado e mantido pela skill
+`archify` a partir do conteúdo deste arquivo. Regenerar sempre que este
+arquivo mudar — ver `## Regras de alteração`.
+
 ## Objetivo
 
 [OBJETIVO]
@@ -108,12 +112,13 @@ Antes de alterar:
 5. Implementar.
 6. Registrar uma ADR quando a decisão for estrutural e não reversível de graça.
 7. Atualizar este arquivo.
-8. Atualizar as regras de negócio afetadas.
-9. Atualizar testes.
-10. Executar Validator.
-11. Executar Tester.
-12. Executar Security Specialist.
-13. Atualizar o histórico.
+8. Regenerar `docs/arquitetura.html` via skill `archify` (tipo `architecture`), quando a skill estiver disponível.
+9. Atualizar as regras de negócio afetadas.
+10. Atualizar testes.
+11. Executar Validator.
+12. Executar Tester.
+13. Executar Security Specialist.
+14. Atualizar o histórico.
 
 ## Histórico
 

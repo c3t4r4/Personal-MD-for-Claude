@@ -80,7 +80,7 @@ A sincronização é etapa de **toda implementação**. `/init-project` cria e a
 | Documento | Gatilho | Sem gatilho |
 | --- | --- | --- |
 | `docs/RegrasNegocio.md` | comportamento, validação, permissão, máquina de estado ou regra de cálculo mudou | `sem alteração` |
-| `docs/Arquitetura.md` | camada, módulo, padrão, dependência, fluxo de dados, schema ou decisão arquitetural mudou | `sem alteração` |
+| `docs/Arquitetura.md` | camada, módulo, padrão, dependência, fluxo de dados, schema ou decisão arquitetural mudou — regenerar também `docs/arquitetura.html` via skill `archify`, quando disponível | `sem alteração` |
 | `docs/Organograma.md` | módulo, camada, fluxo de negócio, tela, integração externa ou relação entre componentes mudou de forma que o diagrama fique desatualizado | `sem alteração` |
 | `docs/Infraestrutura.md` | Docker, Compose, deploy, rede, volume, variável de ambiente, build ou observabilidade mudou | `sem alteração` / `n/a` |
 | `docs/API.md` | rota, método, payload, header, código HTTP, autenticação de endpoint, paginação ou filtro mudou | `sem alteração` / `n/a` |
@@ -93,6 +93,7 @@ A sincronização é etapa de **toda implementação**. `/init-project` cria e a
 
 Como ler a tabela:
 
+- `docs/arquitetura.html` é o companion renderizado de `docs/Arquitetura.md`, gerado pela skill `archify`. Não é um documento novo — não altera a contagem dos onze — e é regenerado sob o mesmo gatilho da linha acima. Skill `archify` ausente degrada (HTML fica pendente, registrado no resumo da tarefa), nunca bloqueia.
 - `sem alteração` é julgamento declarado, não silêncio. Documento não avaliado bloqueia a conclusão da tarefa.
 - `n/a` vale apenas para documento condicional que este projeto legitimamente não tem.
 - Gatilho disparado em documento condicional ausente **obriga a criar o documento**, a partir de `~/.claude/templates/init-project/<Nome>.md.tpl.md`.

@@ -80,6 +80,7 @@ Responsabilidades:
 - Consultar a documentação antes de alterar APIs, frontend, autenticação, banco ou infraestrutura.
 - Criar ou atualizar testes.
 - Executar a sincronização obrigatória de documentação e preencher a tabela com o estado **real**.
+- Regenerar `docs/arquitetura.html` via skill `archify` quando `docs/Arquitetura.md` mudar, se a skill estiver disponível.
 - Criar o documento condicional ausente cujo gatilho disparou, a partir do template correspondente.
 - Não incluir segredos.
 - Não aprovar o próprio trabalho.
@@ -91,7 +92,7 @@ Conforme a seção `Sincronização obrigatória de documentação` de `~/.claud
 | Documento | Gatilho | Sem gatilho |
 | --- | --- | --- |
 | `docs/RegrasNegocio.md` | comportamento, validação, permissão, máquina de estado ou regra de cálculo mudou | `sem alteração` |
-| `docs/Arquitetura.md` | camada, módulo, padrão, dependência, fluxo de dados, schema ou decisão arquitetural mudou | `sem alteração` |
+| `docs/Arquitetura.md` | camada, módulo, padrão, dependência, fluxo de dados, schema ou decisão arquitetural mudou — regenerar também `docs/arquitetura.html` via skill `archify`, quando disponível | `sem alteração` |
 | `docs/Organograma.md` | módulo, camada, fluxo de negócio, tela, integração externa ou relação entre componentes mudou de forma que o diagrama fique desatualizado | `sem alteração` |
 | `docs/Infraestrutura.md` | Docker, Compose, deploy, rede, volume, variável de ambiente, build ou observabilidade mudou | `sem alteração` / `n/a` |
 | `docs/API.md` | rota, método, payload, header, código HTTP, autenticação de endpoint, paginação ou filtro mudou | `sem alteração` / `n/a` |
@@ -101,6 +102,8 @@ Conforme a seção `Sincronização obrigatória de documentação` de `~/.claud
 | `docs/Progresso.md` | **sempre** — toda tarefa concluída gera uma linha | nunca `sem alteração` |
 | `docs/Memoria.md` | aprendizado não óbvio, armadilha de ambiente, comando descoberto ou decisão com motivo | `sem alteração` |
 | `docs/Harness.md` | papel, agente, fluxo de aprovação ou ferramenta do harness mudou | `sem alteração` |
+
+`docs/arquitetura.html` é o companion renderizado de `docs/Arquitetura.md`, gerado pela skill `archify`. Não é um documento novo — não altera a contagem dos onze — e é regenerado sob o mesmo gatilho da linha acima. Skill `archify` ausente degrada (HTML fica pendente, registrado no resumo da tarefa), nunca bloqueia.
 
 `sem alteração` é julgamento declarado, não silêncio. Documento `atualizado` ganha linha datada no seu `## Histórico`; documento `sem alteração` não recebe linha.
 

@@ -130,13 +130,14 @@ Montar a tabela e apresentá-la:
 | Capacidade | Uso | Se faltar |
 | --- | --- | --- |
 | MCP `claude-mem` | corpora, `smart_search`, `observation_search` | Glob/Grep com escopo; `docs/RAG.md` registra "sem backend de RAG" |
+| skill `archify` (indispensável) | gerar/atualizar `docs/arquitetura.html` a partir de `docs/Arquitetura.md` | pular a geração, registrar pendência em `docs/RAG.md` e no resumo final |
 | skill `graphify` | grafo opcional do projeto | segue sem grafo, registrado em `docs/RAG.md` |
 | agentes do harness | delegação nos pontos caros | papéis executados inline |
 | skill `ui-ux-pro-max` | apoio ao `docs/Frontend.md` | design system vem da entrevista |
 
 Regras:
 
-- **Ausência degrada, nunca interrompe.** O comando conclui em qualquer ambiente.
+- **Ausência degrada, nunca interrompe.** O comando conclui em qualquer ambiente — inclusive sem `archify`: "indispensável" qualifica o quanto ela é usada (sempre tentada, nunca apenas sugerida), não uma condição de bloqueio.
 - Se algo ausente for **relevante para este projeto**, ler sob demanda `~/.claude/templates/init-project/_capacidades.md` e informar como instalar. Sem frontend, não sugerir `ui-ux-pro-max`.
 - **Nunca instalar nada.** Não rodar `/plugin`, não editar `settings.json`. A instrução é informativa.
 - Levar a tabela para o resumo final e para `docs/RAG.md`.
@@ -222,6 +223,7 @@ Classificar cada item de governança:
 CLAUDE.md
 docs/RegrasNegocio.md
 docs/Arquitetura.md
+docs/arquitetura.html
 docs/Organograma.md
 docs/RAG.md
 docs/Harness.md
@@ -244,6 +246,11 @@ docs/Infraestrutura.md
 | `existente e mantido` | Preservar integralmente. Não tocar |
 | `incompleto` | Listar a lacuna e **pedir autorização** antes de editar |
 | `divergente` | Documentação contradiz o repositório. Reportar; nunca corrigir em silêncio |
+
+`docs/arquitetura.html` é exceção à regra de "existente e mantido: não
+tocar": é um artefato derivado de `docs/Arquitetura.md`, sempre regenerável
+via `archify` quando o `.md` mudar. Sobrescrever esse HTML não é uma violação
+de preservação, desde que o conteúdo continue refletindo fielmente o `.md`.
 
 ### Diagrama de classificação
 
@@ -408,6 +415,7 @@ Cada template é um arquivo próprio em `~/.claude/templates/init-project/`, no 
 | `CLAUDE.md` | `CLAUDE.md.tpl.md` | Sempre |
 | `docs/RegrasNegocio.md` | `RegrasNegocio.md.tpl.md` | Sempre |
 | `docs/Arquitetura.md` | `Arquitetura.md.tpl.md` | Sempre |
+| `docs/arquitetura.html` | gerado via skill `archify` (tipo `architecture`) a partir de `docs/Arquitetura.md` — não é um `.tpl.md` | Sempre, quando a skill `archify` estiver disponível |
 | `docs/Organograma.md` | `Organograma.md.tpl.md` | Sempre |
 | `docs/RAG.md` | `RAG.md.tpl.md` | Sempre |
 | `docs/Harness.md` | `Harness.md.tpl.md` | Sempre |
@@ -426,6 +434,7 @@ Cada template é um arquivo próprio em `~/.claude/templates/init-project/`, no 
 - Nunca escrever valor real de secret. Apenas nome e origem.
 - Em `docs/Harness.md`, preencher a coluna **Neste projeto** com o agente detectado na FASE 0.5 — ou `inline` quando ele não existir neste ambiente. Papel sem agente continua sendo papel obrigatório.
 - Em `docs/RAG.md`, preencher a tabela de capacidades com o resultado da FASE 0.5, datado.
+- Gerar `docs/arquitetura.html`, quando a skill `archify` estiver disponível: ler stack, camadas, diagrama de fluxo de dados e integrações externas de `docs/Arquitetura.md` recém-criado; modelar como especificação JSON do tipo `architecture` da `archify`; validar com `node bin/archify.mjs validate architecture <candidate.json> --quality showcase --json`; entregar com `node bin/archify.mjs deliver architecture <candidate.json> docs/arquitetura.html --quality showcase --json`. Ausente a skill, pular e registrar a pendência no resumo final e em `docs/RAG.md`.
 - Em `CLAUDE.md`, seção `Sincronização de documentação`, preencher o estado inicial dos quatro documentos condicionais a partir do que a FASE 2 detectou: `EXISTE` quando o documento for criado agora, `n/a` quando o projeto não o justificar. Este bloco é detectável — não vira pergunta na entrevista. `n/a` aqui não é permanente: o documento passa a ser obrigatório assim que o gatilho correspondente disparar em alguma implementação.
 
 ### Esqueleto do `docs/RegrasNegocio.md`
@@ -483,6 +492,7 @@ Proibido, sem exceção: `git reset` destrutivo, remoção de branch, alteraçã
 ### Checklist final
 
 - [ ] Documentos obrigatórios existem
+- [ ] `docs/arquitetura.html` existe e reflete a versão atual de `docs/Arquitetura.md`, quando a skill `archify` estiver disponível
 - [ ] Documentos condicionais aplicáveis existem
 - [ ] `docs/Harness.md` tem a coluna **Neste projeto** preenchida com agente real ou `inline`
 - [ ] Capacidades ausentes foram avisadas, com instrução de instalação, e o fallback foi aplicado
@@ -503,6 +513,7 @@ Informar:
 - Arquivos criados.
 - Arquivos preservados.
 - Arquivos que precisam de autorização para atualização.
+- **Estado de `docs/arquitetura.html`**: gerado / desatualizado / pendente por skill `archify` ausente.
 - **Capacidades do ambiente**: o que está disponível, o que faltou, o fallback usado e como instalar o que for relevante.
 - Estado do RAG e o que foi indexado.
 - Pendências `a definir`, agrupadas por documento.
