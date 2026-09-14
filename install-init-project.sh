@@ -44,6 +44,13 @@ FILES=(
 
 PACKAGE_DIR="${1:-${DEFAULT_PACKAGE_DIR}}"
 
+if [[ "${PACKAGE_DIR}" == "~/.claude/initProjectsInstall/dist/init-project" ]]; then
+  if [[ ! -d "${PACKAGE_DIR}" ]]; then
+    mkdir -p "${PACKAGE_DIR}"
+    echo "==> Criada pasta padrão de pacote: ${PACKAGE_DIR}"
+  fi
+fi
+
 if [[ ! -d "${PACKAGE_DIR}" ]]; then
   echo "ERRO: pasta de pacote não encontrada: ${PACKAGE_DIR}" >&2
   echo "Uso: $0 [caminho/para/pasta-do-pacote]" >&2
@@ -168,6 +175,14 @@ echo ""
 echo "==> Verificação de componentes usados pelo /init-project"
 echo ""
 
+# Detectar sistema operacional
+case "$(uname -s)" in
+  Darwin*) OS_KIND="macos" ;;
+  Linux*)  OS_KIND="linux" ;;
+  CYGWIN*|MINGW*|MSYS*) OS_KIND="windows" ;;
+  *) OS_KIND="desconhecido" ;;
+esac
+
 echo "-- Agentes, skills, plugins e marketplaces --"
 if [[ -x "${SCAN_SH}" ]]; then
   "${SCAN_SH}" capacidades
@@ -183,8 +198,104 @@ if command -v rtk >/dev/null 2>&1; then
   echo "ok: rtk encontrado em ${RTK_PATH} (${RTK_VERSION})"
 else
   echo "ausente: binário 'rtk' não encontrado no PATH."
+
+  # Oferecer instalação interativa
+  if [[ "${HAS_TTY}" -eq 1 ]] && [[ "${OS_KIND}" != "desconhecido" ]]; then
+    answer=""
+    if read -r -p "  Deseja instalar rtk agora? [s/N] " answer < /dev/tty; then
+      if [[ "${answer}" == [Ss]* ]]; then
+        case "${OS_KIND}" in
+          macos)
+            if command -v brew >/dev/null 2>&1; then
+              echo "  Instalando rtk via Homebrew..."
+              if brew install rtk; then
+                echo "  ✓ rtk instalado com sucesso"
+              else
+                echo "  ✗ Falha ao instalar rtk via brew"
+              fi
+            else
+              echo "  ✗ Homebrew não encontrado. Instale com: brew install rtk"
+            fi
+            ;;
+          linux)
+            echo "  Instalando rtk via script de instalação..."
+            if curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh; then
+              echo "  ✓ rtk instalado com sucesso"
+              # Detectar shell rc file
+              RC_FILE="${HOME}/.bashrc"
+              if [[ "${SHELL}" == *"zsh"* ]]; then
+                RC_FILE="${HOME}/.zshrc"
+              fi
+              # Adicionar PATH se não existir
+              if ! grep -qF 'export PATH="$HOME/.local/bin:$PATH"' "${RC_FILE}" 2>/dev/null; then
+                echo 'export PATH="$HOME/.local/bin:$PATH"' >> "${RC_FILE}"
+                echo "  ✓ Adicionado PATH a ${RC_FILE}"
+                echo "  ℹ Execute: source ${RC_FILE}"
+              fi
+            else
+              echo "  ✗ Falha ao instalar rtk"
+            fi
+            ;;
+          windows)
+            if command -v winget >/dev/null 2>&1; then
+              echo "  Instalando rtk via winget..."
+              if winget install rtk-ai.rtk; then
+                echo "  ✓ rtk instalado com sucesso"
+              else
+                echo "  ✗ Falha ao instalar rtk via winget"
+              fi
+            else
+              echo "  ✗ winget não encontrado. Instale manualmente com: winget install rtk-ai.rtk"
+            fi
+            ;;
+        esac
+      fi
+    fi
+  elif [[ "${HAS_TTY}" -eq 0 ]]; then
+    echo "  ℹ Sem terminal interativo. Para instalar, execute manualmente:"
+    case "${OS_KIND}" in
+      macos) echo "    brew install rtk" ;;
+      linux) echo "    curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh" ;;
+      windows) echo "    winget install rtk-ai.rtk" ;;
+    esac
+  fi
+
   if [[ -f "${CLAUDE_HOME}/RTK.md" ]]; then
-    echo "  Ver ${CLAUDE_HOME}/RTK.md para instruções de instalação."
+    echo "  Ver ${CLAUDE_HOME}/RTK.md para instruções de uso."
+  fi
+fi
+
+echo ""
+echo "-- Skill archify --"
+if [[ -f "${CLAUDE_HOME}/skills/archify/SKILL.md" ]]; then
+  echo "ok: archify instalado em ${CLAUDE_HOME}/skills/archify"
+else
+  echo "ausente: skill 'archify' não encontrada."
+
+  # Oferecer instalação interativa
+  if [[ "${HAS_TTY}" -eq 1 ]]; then
+    answer=""
+    if read -r -p "  Deseja instalar archify agora? [s/N] " answer < /dev/tty; then
+      if [[ "${answer}" == [Ss]* ]]; then
+        if command -v npx >/dev/null 2>&1; then
+          echo "  Instalando archify via npx..."
+          if npx -y skills add tt-a1i/archify --skill archify --agent claude-code --global --copy --yes; then
+            if [[ -f "${CLAUDE_HOME}/skills/archify/SKILL.md" ]]; then
+              echo "  ✓ archify instalado com sucesso"
+            else
+              echo "  ✗ Arquivo de skill não encontrado após instalação"
+            fi
+          else
+            echo "  ✗ Falha ao instalar archify"
+          fi
+        else
+          echo "  ✗ npx não encontrado. Instale Node.js (≥18) para usar archify."
+        fi
+      fi
+    fi
+  else
+    echo "  ℹ Sem terminal interativo. Para instalar, execute:"
+    echo "    npx -y skills add tt-a1i/archify --skill archify --agent claude-code --global --copy --yes"
   fi
 fi
 

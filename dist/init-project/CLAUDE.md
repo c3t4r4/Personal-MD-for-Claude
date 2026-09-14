@@ -182,19 +182,19 @@ A sincronização é etapa de **toda implementação**. `/init-project` cria e a
 
 ### Tabela de gatilhos
 
-| Documento                | Gatilho                                                                                         | Sem gatilho             |
-| ------------------------ | ----------------------------------------------------------------------------------------------- | ----------------------- |
-| `docs/RegrasNegocio.md`  | comportamento, validação, permissão, máquina de estado ou regra de cálculo mudou                | `sem alteração`         |
+| Documento                | Gatilho                                                                                                                                                                     | Sem gatilho             |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| `docs/RegrasNegocio.md`  | comportamento, validação, permissão, máquina de estado ou regra de cálculo mudou                                                                                            | `sem alteração`         |
 | `docs/Arquitetura.md`    | camada, módulo, padrão, dependência, fluxo de dados, schema ou decisão arquitetural mudou — regenerar também `docs/arquitetura.html` via skill `archify`, quando disponível | `sem alteração`         |
-| `docs/Organograma.md`    | módulo, camada, fluxo de negócio, tela, integração externa ou relação entre componentes mudou de forma que o diagrama fique desatualizado | `sem alteração`         |
-| `docs/Infraestrutura.md` | Docker, Compose, deploy, rede, volume, variável de ambiente, build ou observabilidade mudou     | `sem alteração` / `n/a` |
-| `docs/API.md`            | rota, método, payload, header, código HTTP, autenticação de endpoint, paginação ou filtro mudou | `sem alteração` / `n/a` |
-| `docs/Frontend.md`       | componente, tela, rota de UI, token de design, padrão de estado ou acessibilidade mudou         | `sem alteração` / `n/a` |
-| `docs/Auth.md`           | authn, authz, sessão, token, papel, permissão ou política de senha mudou                        | `sem alteração` / `n/a` |
-| `docs/RAG.md`            | fonte indexada, corpus, exclusão de segurança ou capacidade do ambiente mudou                   | `sem alteração`         |
-| `docs/Progresso.md`      | **sempre** — toda tarefa concluída gera uma linha                                               | nunca `sem alteração`   |
-| `docs/Memoria.md`        | aprendizado não óbvio, armadilha de ambiente, comando descoberto ou decisão com motivo          | `sem alteração`         |
-| `docs/Harness.md`        | papel, agente, fluxo de aprovação ou ferramenta do harness mudou                                | `sem alteração`         |
+| `docs/Organograma.md`    | módulo, camada, fluxo de negócio, tela, integração externa ou relação entre componentes mudou de forma que o diagrama fique desatualizado                                   | `sem alteração`         |
+| `docs/Infraestrutura.md` | Docker, Compose, deploy, rede, volume, variável de ambiente, build ou observabilidade mudou                                                                                 | `sem alteração` / `n/a` |
+| `docs/API.md`            | rota, método, payload, header, código HTTP, autenticação de endpoint, paginação ou filtro mudou                                                                             | `sem alteração` / `n/a` |
+| `docs/Frontend.md`       | componente, tela, rota de UI, token de design, padrão de estado ou acessibilidade mudou                                                                                     | `sem alteração` / `n/a` |
+| `docs/Auth.md`           | authn, authz, sessão, token, papel, permissão ou política de senha mudou                                                                                                    | `sem alteração` / `n/a` |
+| `docs/RAG.md`            | fonte indexada, corpus, exclusão de segurança ou capacidade do ambiente mudou                                                                                               | `sem alteração`         |
+| `docs/Progresso.md`      | **sempre** — toda tarefa concluída gera uma linha                                                                                                                           | nunca `sem alteração`   |
+| `docs/Memoria.md`        | aprendizado não óbvio, armadilha de ambiente, comando descoberto ou decisão com motivo                                                                                      | `sem alteração`         |
+| `docs/Harness.md`        | papel, agente, fluxo de aprovação ou ferramenta do harness mudou                                                                                                            | `sem alteração`         |
 
 ### Como ler a tabela
 
@@ -279,7 +279,13 @@ Todo plano deve ser criado somente depois de:
 4. Verificar o estado atual do Git.
 5. Identificar decisões pendentes.
 
-Salvar os planos em:
+Os planos sempre devem ser salvos em `.claude/plans/` **a partir da raiz do projeto** — o mesmo
+diretório onde está (ou deveria estar) o `./CLAUDE.md` local — nunca relativo ao diretório de
+trabalho atual.
+
+Se a tarefa estiver sendo executada dentro de um subdiretório do projeto (ex.: um pacote de
+monorepo), subir os diretórios até localizar essa raiz antes de criar `.claude/plans/`. Nunca criar
+uma pasta `.claude/plans/` dentro de um subdiretório de trabalho.
 
 ```text
 .claude/plans/

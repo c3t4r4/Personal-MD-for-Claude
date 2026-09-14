@@ -29,7 +29,7 @@ Antes de qualquer plano, leitura de código, comando ou alteração:
 - Utilizar `claude.mem` no início da sessão e após tarefas significativas.
 - Utilizar RTK conforme as instruções globais.
 - Iniciar tarefas não triviais em modo plan.
-- Criar planos em `.claude/plans/`.
+- Criar planos em `.claude/plans/`, sempre na raiz deste projeto (onde está este arquivo), nunca em um subdiretório de trabalho.
 - Nomear planos com nome da pasta, timestamp e sufixo descritivo.
 - Não sobrescrever arquivos sem confirmação.
 - Consultar documentação antes de alterar API, frontend, autenticação, banco ou infraestrutura.
