@@ -23,13 +23,15 @@ Garantir que toda tarefa relevante seja planejada, implementada, validada, testa
 
 Papel é responsabilidade; agente é quem a executa. Preenchido conforme o que existe **neste** ambiente — papel sem agente correspondente roda `inline`, na conversa principal, com o mesmo protocolo.
 
-| Papel | Agente preferido | Alternativa | Neste projeto |
-| --- | --- | --- | --- |
-| Planner | `planner` | `task-decomposition-expert` | [AGENTE OU `inline`] |
-| Coder | `coder` | especialista do domínio | [AGENTE OU `inline`] |
-| Validator | `code-reviewer` | `reviewer` | [AGENTE OU `inline`] |
-| Tester | `test-engineer` | — | [AGENTE OU `inline`] |
-| Security Specialist | `security-auditor` | — | [AGENTE OU `inline`] |
+| Papel | Agente preferido | Alternativa | Modelo preferido | Neste projeto |
+| --- | --- | --- | --- | --- |
+| Planner | `planner` | `task-decomposition-expert` | Sonnet | [AGENTE OU `inline`] |
+| Coder | `coder` | especialista do domínio | Haiku | [AGENTE OU `inline`] |
+| Validator | `code-reviewer` | `reviewer` | Sonnet | [AGENTE OU `inline`] |
+| Tester | `test-engineer` | — | Haiku | [AGENTE OU `inline`] |
+| Security Specialist | `security-auditor` | — | Sonnet | [AGENTE OU `inline`] |
+
+`Modelo preferido` segue a tabela `Modelo por papel` de `~/.claude/CLAUDE.md`, que é a fonte única: ao delegar via `Agent`, definir `model: "sonnet"` ou `model: "haiku"` conforme a coluna acima. Papel rodando inline usa o modelo da sessão principal.
 
 Especialistas que o Coder aciona quando o assunto pedir:
 

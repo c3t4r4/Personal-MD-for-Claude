@@ -35,6 +35,7 @@ Antes de qualquer plano, leitura de código, comando ou alteração:
 - Consultar documentação antes de alterar API, frontend, autenticação, banco ou infraestrutura.
 - Executar a sincronização obrigatória de documentação ao fim de **toda** implementação, conforme a seção `## Sincronização de documentação` deste arquivo.
 - Utilizar Planner, Coder, Validator, Tester e Security Specialist.
+- Executar Planner, Validator e Security Specialist em Sonnet, e Coder e Tester em Haiku, conforme a tabela `Modelo por papel` de `~/.claude/CLAUDE.md`.
 - Uma tarefa só está concluída após aprovação do Validator, Tester e Security Specialist e com a tabela de sincronização preenchida.
 
 ## Stack confirmada

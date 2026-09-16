@@ -407,6 +407,22 @@ Se qualquer agente retornar `REJECTED`:
 4. Executar novamente as revisões necessárias.
 5. Repetir até obter as aprovações obrigatórias.
 
+### Modelo por papel
+
+| Papel                | Modelo | Padrão atual            | Motivo                                                                                   |
+| -------------------- | ------ | ------------------------ | ----------------------------------------------------------------------------------------- |
+| Planner               | Sonnet | `claude-sonnet-5[1m]`    | Planejamento exige raciocínio mais profundo sobre riscos, arquitetura e critérios de aceite. |
+| Coder                 | Haiku  | `claude-haiku-4-5[1m]`   | Implementação segue um plano já definido; tarefa mais mecânica, custo menor.               |
+| Validator             | Sonnet | `claude-sonnet-5[1m]`    | Revisão crítica exige o mesmo nível de raciocínio do planejamento.                         |
+| Tester                | Haiku  | `claude-haiku-4-5[1m]`   | Execução e registro de testes é mecânica.                                                  |
+| Security Specialist   | Sonnet | `claude-sonnet-5[1m]`    | Auditoria de segurança exige raciocínio mais profundo.                                     |
+
+Ao delegar um papel para um subagente pela ferramenta `Agent`, definir explicitamente o parâmetro `model` conforme a coluna `Modelo` acima (`model: "sonnet"` ou `model: "haiku"`) — essa definição tem prioridade sobre qualquer `model` já declarado no frontmatter do subagente.
+
+A coluna `Padrão atual` documenta apenas qual modelo concreto o alias resolve hoje. Se esse mapeamento mudar no futuro, atualizar somente essa coluna — a coluna `Modelo` (Sonnet/Haiku) permanece estável.
+
+Quando o papel roda inline, sem subagente, na conversa principal, esta regra não se aplica: a conversa principal roda no modelo já ativo na sessão.
+
 ---
 
 ## Planner
