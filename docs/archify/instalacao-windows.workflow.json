@@ -1,0 +1,92 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Instalação do init-project no Windows 11",
+    "quality_profile": "showcase",
+    "output": "docs/arquitetura.html",
+    "views": [
+      {
+        "id": "copia",
+        "label": "Pacote até o perfil",
+        "focus": ["empacotar", "levar", "validar", "politica", "resumo"],
+        "note": "Os 18 arquivos só seguem depois que a pasta do pacote está completa."
+      },
+      {
+        "id": "excecoes",
+        "label": "Parar ou manter",
+        "focus": ["validar", "abortar", "politica", "manter", "resumo"],
+        "note": "Pacote incompleto não copia. Sem terminal, o que já existe permanece."
+      },
+      {
+        "id": "relatorio",
+        "label": "Relatório final",
+        "focus": ["resumo", "verificar"],
+        "note": "RTK, archify e o scan informam o ambiente e não desfazem a cópia."
+      }
+    ]
+  },
+  "lanes": [
+    { "id": "fluxo", "label": "Instalação" },
+    { "id": "excecao", "label": "Exceções", "variant": "exception" }
+  ],
+  "phases": [
+    { "id": "preparar", "label": "Preparar", "fromCol": 0, "toCol": 1 },
+    { "id": "instalar", "label": "Instalar", "fromCol": 2, "toCol": 3, "variant": "emphasis" },
+    { "id": "fechar", "label": "Fechar", "fromCol": 4, "toCol": 5, "variant": "dashed" }
+  ],
+  "groups": [
+    { "id": "decisao", "label": "Política de cópia", "lane": "fluxo", "fromCol": 2, "toCol": 3, "variant": "emphasis" },
+    { "id": "parada", "label": "Não instalar", "lane": "excecao", "fromCol": 2, "toCol": 3, "variant": "security" }
+  ],
+  "mainPath": ["empacotar", "levar", "validar", "politica", "resumo", "verificar"],
+  "nodes": [
+    { "id": "empacotar", "lane": "fluxo", "col": 0, "type": "backend", "label": "Empacotar", "sublabel": "package-init-project.sh" },
+    { "id": "levar", "lane": "fluxo", "col": 1, "type": "external", "label": "Levar pasta", "sublabel": "dist/init-project" },
+    { "id": "validar", "lane": "fluxo", "col": 2, "type": "security", "label": "Validar", "sublabel": "18 arquivos", "tag": "antes da cópia" },
+    { "id": "politica", "lane": "fluxo", "col": 3, "type": "backend", "label": "Copiar", "sublabel": "novo ou s/N/d" },
+    { "id": "resumo", "lane": "fluxo", "col": 4, "type": "frontend", "label": "Resumo", "sublabel": "contagens" },
+    { "id": "verificar", "lane": "fluxo", "col": 5, "type": "cloud", "label": "Verificar", "sublabel": "scan, RTK, archify", "tag": "não bloqueia" },
+    { "id": "abortar", "lane": "excecao", "col": 2, "type": "security", "label": "Abortar", "sublabel": "pacote incompleto" },
+    { "id": "manter", "lane": "excecao", "col": 3, "type": "security", "label": "Manter", "sublabel": "sem TTY ou N" }
+  ],
+  "edges": [
+    { "id": "gerar-pacote", "from": "empacotar", "to": "levar" },
+    { "id": "entregar", "from": "levar", "to": "validar", "variant": "emphasis" },
+    { "id": "pacote-ok", "from": "validar", "to": "politica", "label": "completo", "variant": "emphasis" },
+    { "id": "pacote-incompleto", "from": "validar", "to": "abortar", "label": "falta arquivo", "variant": "security", "role": "error" },
+    { "id": "copiado", "from": "politica", "to": "resumo" },
+    { "id": "preservar", "from": "politica", "to": "manter", "label": "existe", "variant": "security", "role": "branch" },
+    { "id": "seguir-resumo", "from": "manter", "to": "resumo", "variant": "dashed", "role": "return" },
+    { "id": "informar", "from": "resumo", "to": "verificar", "label": "informativo", "variant": "dashed" }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Cópia protegida",
+      "items": [
+        "Nada é instalado se faltar um dos 18 arquivos",
+        "Arquivo novo entra sem pergunta",
+        "Arquivo existente só muda com a resposta s"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Quando para",
+      "items": [
+        "Pacote incompleto encerra com erro",
+        "Sem terminal, o existente é mantido",
+        "Destino que já é uma pasta é pulado"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Depois da cópia",
+      "items": [
+        "O resumo conta novos, sobrescritos e pulados",
+        "RTK e archify só instalam com um sim",
+        "O relatório não muda o código de saída"
+      ]
+    }
+  ]
+}

@@ -18,7 +18,7 @@ Empacota o comando `/init-project` do Claude Code (`~/.claude/CLAUDE.md` + `comm
 | `templates/init-project/_varredura-regras.md`      | Procedimento do modo `--regras` (varredura profunda de código)                                                                                                                                                      |
 | `templates/init-project/*.md.tpl.md` (11 arquivos) | Templates de `CLAUDE.md`, `RegrasNegocio.md`, `Arquitetura.md`, `RAG.md`, `Harness.md`, `Progresso.md`, `Memoria.md`, `API.md`, `Frontend.md`, `Auth.md`, `Infraestrutura.md` — gerados a cada projeto inicializado |
 
-## Os dois scripts
+## Os scripts
 
 ### `package-init-project.sh`
 
@@ -51,6 +51,29 @@ Roda na máquina de **destino** (nova ou já existente).
 install-init-project.sh [caminho/para/pasta-do-pacote]
 ```
 
+### `install-init-project.ps1` e `install-init-project.cmd` (Windows 11)
+
+Mesma instalação, no destino `%USERPROFILE%\.claude`. O `.ps1` é o instalador. O `.cmd` só o chama com `ExecutionPolicy Bypass` neste processo, para funcionar mesmo quando a política da máquina bloqueia scripts.
+
+1. Recebe a pasta do pacote, ou usa `%USERPROFILE%\.claude\initProjectsInstall\dist\init-project` se nenhum caminho for informado. Se essa pasta padrão não existir, ela é criada e a instalação aborta até os 18 arquivos estarem lá.
+2. Confere os 18 arquivos antes de copiar qualquer um. Se faltar algum, não instala nada.
+3. Copia arquivo por arquivo com a mesma política do script bash: novo entra direto; existente, idêntico ou não, pergunta `[s/N/d=ver diff]`; sem terminal interativo, mantém o que já existe.
+4. Ao final, roda a verificação de componentes. Ela não muda o código de saída.
+
+`_scan.sh` continua sendo bash. A cópia dos arquivos não depende disso. O relatório de agentes, skills e plugins usa Git Bash ou, na falta dele, WSL. RTK, se o usuário confirmar, instala com `winget install rtk-ai.rtk`. Archify, se o usuário confirmar, instala com `npx`.
+
+No PowerShell:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install-init-project.ps1 [caminho\para\pasta-do-pacote]
+```
+
+No Prompt de Comando, ou com duplo clique (a janela permanece aberta até uma tecla):
+
+```bat
+install-init-project.cmd [caminho\para\pasta-do-pacote]
+```
+
 ## Verificação de componentes (ao final da instalação)
 
 Depois de copiar os arquivos, o instalador informa — sem nunca bloquear a instalação — se os componentes que o `/init-project` usa estão presentes na máquina de destino:
@@ -65,7 +88,7 @@ Qualquer coisa ausente aparece no relatório como `ausente`/`indisponivel`, nunc
 
 1. Na máquina de origem: `~/.claude/initProjectsInstall/package-init-project.sh` → gera `dist/init-project/`.
 2. Copie a pasta `dist/init-project/` inteira para a máquina nova, por qualquer meio (USB, `rsync`, AirDrop, etc.).
-3. Na máquina nova, rode `install-init-project.sh <caminho-da-pasta-copiada>` — ou coloque a pasta em `~/.claude/initProjectsInstall/dist/init-project/` e rode sem argumento.
+3. Na máquina nova, rode `install-init-project.sh <caminho-da-pasta-copiada>` — ou, no Windows 11, `install-init-project.cmd <caminho-da-pasta-copiada>`. Sem argumento, o instalador procura `~/.claude/initProjectsInstall/dist/init-project/` (no Windows, `%USERPROFILE%\.claude\initProjectsInstall\dist\init-project`).
 4. Revise o relatório de verificação de componentes ao final e instale o que estiver faltando (RTK, plugins, skills).
 
 ## Garantias de segurança
