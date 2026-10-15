@@ -1,6 +1,6 @@
 # Organograma — initProjectsInstall
 
-Última atualização: 2026-10-06
+Última atualização: 2026-10-15
 
 ## Relação entre as peças
 
@@ -26,10 +26,11 @@ máquina de origem
                                 +-- templates/init-project/*
 ```
 
-O `.cmd` não decide o que copiar. Ele só inicia o PowerShell. A verificação de capacidades, quando há Git Bash ou WSL, lê o `_scan.sh` já colocado em `%USERPROFILE%\.claude\templates\init-project\`.
+O `.cmd` não decide o que copiar. Ele só inicia o PowerShell, preferindo `pwsh` quando o encontra no PATH e caindo para `powershell.exe` caso contrário. A verificação de capacidades, quando há `bash` resolvível no PATH (Git Bash ou WSL), lê o `_scan.sh` já colocado em `%USERPROFILE%\.claude\templates\init-project\`.
 
 ## Histórico
 
 | Data | Alteração |
 | --- | --- |
 | 2026-10-06 | Criado ao acrescentar o ramo Windows 11. |
+| 2026-10-15 | Registrada a preferência do `.cmd` por `pwsh` sobre `powershell.exe`. |

@@ -2,7 +2,7 @@
 
 > Memória viva das regras de instalação do comando `/init-project`.
 
-Última atualização: 2026-10-06
+Última atualização: 2026-10-15
 
 ---
 
@@ -86,20 +86,22 @@ Não há telas. As regras são do instalador de linha de comando.
 ### RN-INSTALADOR-008 — Componentes opcionais só com sim
 
 - **Status:** `confirmada`
-- **Enunciado:** RTK (`winget install --id rtk-ai.rtk`) e archify (`npx`) só são instalados depois de uma resposta que começa com `s` ou `S` num terminal interativo. Sem terminal, o instalador apenas imprime o comando manual.
+- **Enunciado:** RTK e archify só são instalados depois de uma resposta que começa com `s` ou `S` num terminal interativo. Sem terminal, o instalador apenas imprime o comando manual. RTK é instalado por OS: `brew install rtk` no macOS, script `curl | sh` no Linux, `winget install rtk-ai.rtk` no Windows — nos dois instaladores, `install-init-project.sh` e `install-init-project.ps1`, não só no Windows.
 - **Rastreabilidade:** `install-init-project.sh`, `install-init-project.ps1`
 
 ### RN-INSTALADOR-009 — Origem e destino são o mesmo arquivo
 
-- **Status:** `confirmada`
+- **Status:** `revogada` (2026-10-15)
 - **Enunciado:** Se o arquivo do pacote e o destino resolvem para o mesmo caminho, o instalador não copia. Conta o item como pulado e segue para o próximo. Evita copiar um arquivo sobre ele mesmo.
-- **Rastreabilidade:** `install-init-project.ps1`
+- **Motivo da revogação:** a reescrita de `install-init-project.ps1` (2026-10-15) simplificou a lógica de cópia e não reimplementou esta checagem. `install-init-project.sh` nunca a teve. Aceito como simplificação intencional nesta sincronização de documentação — não é mais um comportamento garantido por nenhum dos dois instaladores.
+- **Rastreabilidade:** nenhuma (comportamento removido).
 
 ### RN-INSTALADOR-010 — Destino que é pasta
 
-- **Status:** `confirmada`
+- **Status:** `revogada` (2026-10-15)
 - **Enunciado:** Se o caminho de destino existe e é uma pasta, o arquivo é pulado com aviso. O instalador não grava o arquivo dentro dessa pasta.
-- **Rastreabilidade:** `install-init-project.ps1`
+- **Motivo da revogação:** mesma reescrita de `install-init-project.ps1` que revogou RN-INSTALADOR-009 — a checagem explícita de "destino é pasta" não existe mais no script atual. `install-init-project.sh` nunca a teve.
+- **Rastreabilidade:** nenhuma (comportamento removido).
 
 ---
 
@@ -108,3 +110,4 @@ Não há telas. As regras são do instalador de linha de comando.
 | Data | Alteração |
 | --- | --- |
 | 2026-10-06 | Criado com RN-INSTALADOR-001 a RN-INSTALADOR-010, ao adicionar o instalador Windows 11. |
+| 2026-10-15 | RN-INSTALADOR-009 e RN-INSTALADOR-010 revogadas — removidas na reescrita de `install-init-project.ps1`. RN-INSTALADOR-008 ampliada para cobrir a instalação de RTK por OS também em `install-init-project.sh`. |

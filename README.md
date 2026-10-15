@@ -55,7 +55,7 @@ install-init-project.sh [caminho/para/pasta-do-pacote]
 
 ### `install-init-project.ps1` / `install-init-project.cmd` (Windows)
 
-Mesmo comportamento do `install-init-project.sh` — mesma lista de 18 arquivos, mesmo fluxo de pergunta `[s/N/d=ver diff]`, mesmo relatório final — só que em PowerShell. `install-init-project.cmd` é um atalho fino para quem prefere clicar duas vezes em vez de abrir o PowerShell manualmente; ele só repassa os argumentos para o `.ps1` com `-ExecutionPolicy Bypass` (não altera a política de execução do sistema, só a dessa chamada).
+Mesmo comportamento do `install-init-project.sh` — mesma lista de 18 arquivos, mesmo fluxo de pergunta `[s/N/d=ver diff]`, mesmo relatório final — só que em PowerShell. `install-init-project.ps1` roda em PowerShell 5.1+ (o host que já vem no Windows 11) ou em `pwsh` 7+ (qualquer SO, útil para desenvolver/testar o script fora do Windows). `install-init-project.cmd` é um atalho fino para quem prefere clicar duas vezes em vez de abrir o terminal manualmente: ele procura `pwsh` no PATH e usa-o quando presente, caindo para `powershell.exe` caso contrário, sempre com `-ExecutionPolicy Bypass` (não altera a política de execução do sistema, só a dessa chamada).
 
 ```powershell
 .\install-init-project.ps1 [caminho\para\pasta-do-pacote]
@@ -69,7 +69,7 @@ Depois de copiar os arquivos, o instalador informa — sem nunca bloquear a inst
 
 - **Agentes, skills, plugins e marketplaces**: reaproveita o `_scan.sh capacidades` recém-instalado (agentes do harness, skills como `graphify`/`ui-ux-pro-max`, plugins habilitados, marketplaces conhecidos).
 - **RTK** (Rust Token Killer, binário externo de proxy de comandos): checa `which rtk`/`rtk --version` e se o hook `rtk hook claude` está configurado em `settings.json`.
-- **MCP `claude-mem`**: não é verificável por script — o relatório lembra que é preciso testar chamando a ferramenta `list_corpora` dentro de uma sessão do Claude Code.
+- **MCP de memória (`claude-mem` e/ou `ai-memory`)**: não é verificável por script — o relatório lembra que é preciso testar chamando `list_corpora` (`claude-mem`) e/ou `memory_status` (`ai-memory`) dentro de uma sessão do Claude Code. Os dois podem coexistir; nenhum é pré-requisito do outro.
 
 Qualquer coisa ausente aparece no relatório como `ausente`/`indisponivel`, nunca interrompe o processo.
 

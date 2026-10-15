@@ -1,0 +1,11 @@
+# Normalização de fim de linha.
+# Scripts bash, regra .mdc e markdown precisam de LF mesmo em checkout Windows:
+# bash não aceita CRLF e o Cursor lê os .md/.mdc como texto puro.
+# PowerShell fica em CRLF, que é o nativo do Windows.
+* text=auto
+*.sh text eol=lf
+*.mdc text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.snippet text eol=lf
+*.ps1 text eol=crlf

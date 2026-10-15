@@ -11,8 +11,8 @@ Scripts de instalação e templates Markdown. Não há aplicação, servidor nem
 ## Linguagens e frameworks
 
 - Bash, para empacotar e instalar em macOS/Linux, e para `_scan.sh`.
-- PowerShell 5.1 ou superior, para instalar no Windows 11.
-- Prompt de Comando (`.cmd`), apenas para contornar a ExecutionPolicy ao lançar o `.ps1`.
+- PowerShell 5.1 ou superior (Windows 11) ou `pwsh` 7 ou superior (qualquer SO), para instalar no Windows.
+- Prompt de Comando (`.cmd`), apenas para contornar a ExecutionPolicy ao lançar o `.ps1` — ele usa `pwsh` quando presente no PATH, caindo para `powershell.exe` caso contrário.
 - Markdown, nos templates em `dist/init-project/`.
 
 ## Banco de dados
@@ -27,7 +27,7 @@ Não se aplica.
 
 - O instalador Windows replica o comportamento de `install-init-project.sh`: os mesmos 18 caminhos relativos, validação antes de qualquer cópia, pergunta `[s/N/d]` por arquivo existente.
 - Mensagens ao usuário em português.
-- `install-init-project.ps1` fica em UTF-8 com BOM e quebras CRLF, para o Windows PowerShell 5.1 ler os acentos.
+- `install-init-project.ps1` fica em UTF-8 sem BOM e quebras CRLF, com shebang `#!/usr/bin/env pwsh` — desde que o alvo passou a incluir `pwsh` 7 (que lê UTF-8 sem BOM sem problema), o BOM que o PowerShell 5.1 exigia para não ler acentos como ANSI deixou de ser necessário (ver `docs/Memoria.md`).
 - Não sobrescrever arquivo existente sem confirmação explícita.
 
 ## Estrutura de diretórios
@@ -61,12 +61,12 @@ Não há suíte automatizada. A conferência do instalador Windows compara a lis
 ## Decisões arquiteturais relevantes
 
 - Um pacote de pasta, sem zip, para copiar por USB ou rede.
-- PowerShell 5.1, já presente no Windows 11, em vez de exigir PowerShell 7.
-- `_scan.sh` não foi reescrito. No Windows ele roda via Git Bash ou WSL. Se nenhum dos dois existir, o relatório degrada e a cópia dos arquivos continua válida.
+- PowerShell 5.1 continua o piso garantido no Windows 11; `pwsh` 7 é suportado lado a lado (principalmente para desenvolver/testar o script fora do Windows), sem exigi-lo como requisito mínimo.
+- `_scan.sh` não foi reescrito. No Windows, `install-init-project.ps1` detecta `bash` de forma genérica no PATH (sem distinguir Git Bash de WSL nem converter caminhos para `CLAUDE_CONFIG_DIR`); se `bash` não existir ou não resolver os caminhos do Windows corretamente, o relatório degrada e a cópia dos arquivos continua válida.
 
 ## Restrições conhecidas
 
-- A verificação de capacidades no Windows depende de Git Bash ou WSL.
+- A verificação de capacidades no Windows depende de `bash` resolvível no PATH (tipicamente Git Bash ou WSL) — `install-init-project.ps1` não distingue qual dos dois nem converte caminhos para ele.
 - A política de execução do PowerShell pode bloquear o `.ps1` se ele for aberto direto. O `.cmd` aplica `Bypass` só naquele processo.
 - Este repositório não tem frontend, API, autenticação nem Docker.
 
