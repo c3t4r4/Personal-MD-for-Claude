@@ -238,7 +238,7 @@ Nunca indexar:
 
 Se um segredo entrar em um índice, reconstruir o índice do zero e registrar em `docs/Memoria.md`.
 
-Operações caras são opt-in e exigem confirmação explícita: `/learn-codebase` lê todo arquivo-fonte na íntegra; `/graphify` sobre repositório grande é demorado. Nunca executar automaticamente.
+Operações caras são opt-in e exigem confirmação explícita: `/learn-codebase` lê todo arquivo-fonte na íntegra. Nunca executar automaticamente.
 
 ---
 

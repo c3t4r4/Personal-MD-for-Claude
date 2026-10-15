@@ -26,6 +26,10 @@ A lógica anterior de `Find-BashHost`/`Convert-ToBashPath`, que distinguia Git B
 
 Os templates empacotados (`_capacidades.md`, `commands/init-project.md`, `dist/init-project/CLAUDE.md`) passaram a reconhecer `ai-memory` como alternativa (ou complemento) a `claude-mem`. Os dois podem coexistir; nenhum substitui `docs/Memoria.md`, que continua o registro canônico versionado do projeto. O `~/.claude/CLAUDE.md` **instalado** (live) ainda não recebeu essa atualização — ela existe hoje só no pacote (`dist/init-project/`), à espera de uma reinstalação explícita via `install-init-project.sh`/`.ps1`.
 
+### Skill `graphify` removida do pacote (2026-10-15)
+
+Por decisão explícita do usuário, todas as menções a `graphify` (grafo de conhecimento, `graphify-out/`, comando `/graphify`, pacote Python `graphifyy`) foram removidas dos templates empacotados (`_capacidades.md`, `_checklist-entrevista.md`, `RAG.md.tpl.md`, `commands/init-project.md`, `dist/init-project/CLAUDE.md`) e de `_scan.sh` (exclusão de diretório, seção `[RAG]` do relatório e linha correspondente no resumo). Só `archify` (diagramas de arquitetura) continua documentado como skill relacionada a visualização/grafo. Se o pacote precisar reconhecer `graphify` de novo no futuro, reintroduzir a partir do histórico do Git em vez de recriar do zero.
+
 ### ExecutionPolicy
 
 `Bypass` fica na linha do `powershell.exe -File` dentro de `install-init-project.cmd`. A política da máquina não é alterada.
@@ -52,3 +56,4 @@ Se o instalador Windows roda sem argumento e `%USERPROFILE%\.claude\initProjects
 | --- | --- |
 | 2026-10-06 | Registrados BOM, ExecutionPolicy, Git Bash/WSL, winget e npx.cmd. |
 | 2026-10-15 | Registrada a remoção intencional do BOM (alvo passou a incluir pwsh 7), a simplificação da detecção de bash, a preferência do `.cmd` por `pwsh`, RTK cross-OS em `install-init-project.sh` e `ai-memory` como backend de memória alternativo nos templates empacotados. |
+| 2026-10-15 | Removida a skill `graphify` de todo o pacote (`dist/init-project/`), por decisão explícita do usuário — só `archify` permanece. |

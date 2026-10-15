@@ -54,7 +54,7 @@ Framework; testes unitários; integração; end-to-end; dentro do Docker; cobert
 
 ## RAG
 
-Indexar o projeto agora; executar `/learn-codebase` (caro, opt-in); usar `graphify`; caminhos que nunca podem ser indexados além dos padrões.
+Indexar o projeto agora; executar `/learn-codebase` (caro, opt-in); caminhos que nunca podem ser indexados além dos padrões.
 
 ## Git
 

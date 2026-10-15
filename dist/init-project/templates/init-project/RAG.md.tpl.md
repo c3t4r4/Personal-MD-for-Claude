@@ -13,7 +13,6 @@ Estado detectado em [DATA]. Ambiente muda; reconferir com `_scan.sh capacidades`
 | Capacidade | Situação | Uso neste projeto | Fallback em uso |
 | --- | --- | --- | --- |
 | MCP de memória (`claude-mem` / `ai-memory` / ambos / nenhum) | [DISPONÍVEL / INDISPONÍVEL / PARCIAL] | Base — observações, corpora e busca AST (claude-mem) ou wiki versionada e handoff (ai-memory) | Glob/Grep com escopo restrito |
-| skill `graphify` | [DISPONÍVEL / INDISPONÍVEL / NÃO USADO] | Opcional — grafo de conhecimento sob demanda | segue sem grafo |
 | agentes do harness | [DISPONÍVEIS / PARCIAIS / AUSENTES] | Papéis de `docs/Harness.md` com contexto isolado | papéis executados inline |
 | skill `ui-ux-pro-max` | [DISPONÍVEL / INDISPONÍVEL / NÃO APLICÁVEL] | Apoio ao `docs/Frontend.md` | design system vindo da entrevista |
 
@@ -30,7 +29,6 @@ Se nenhum backend de recuperação estiver disponível, registrar aqui e usar Gl
 | `[PROJETO]-geral` | corpus claude-mem | Decisões, correções e descobertas do projeto | `build_corpus` |
 | `[PROJETO]-regras` | corpus claude-mem | Filtrado por `types=decision,feature` — apoio ao `RegrasNegocio.md` | `build_corpus` |
 | Código-fonte | busca AST sob demanda | Símbolos, funções, classes | Não exige build — `smart_search` lê o disco |
-| `graphify-out/` | grafo | [O QUE FOI GRAFICADO] | `/graphify [CAMINHO] --update` |
 | wiki ai-memory (`[WORKSPACE]/[PROJETO]`) | wiki ai-memory (opcional) | Páginas de decisão, convenções e handoff | `memory_write_page` (só a pedido explícito) |
 
 ---
@@ -83,7 +81,6 @@ Se um segredo entrar em um índice por engano: reconstruir o índice do zero e r
 | --- | --- |
 | Tarefa aprovada que muda decisão ou arquitetura | Reconstruir `[PROJETO]-geral` |
 | Regras de negócio alteradas | Reconstruir `[PROJETO]-regras` |
-| Mudança estrutural grande no código | `/graphify [CAMINHO] --update`, se em uso |
 | Índice desatualizado ou suspeito | Reconstruir do zero |
 
 `/learn-codebase` lê **todo arquivo-fonte na íntegra** — é caro e demorado. É **opt-in**: só executar com confirmação explícita do usuário, nunca automaticamente.
@@ -94,7 +91,6 @@ Se um segredo entrar em um índice por engano: reconstruir o índice do zero e r
 
 - Corpora existentes: [LISTA OU "nenhum"]
 - Última indexação: [DATA OU "nunca"]
-- Grafo: [CAMINHO OU "não gerado"]
 - Observações registradas: [QUANTIDADE OU "a definir"]
 
 ---

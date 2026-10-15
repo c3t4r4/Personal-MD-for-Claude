@@ -64,28 +64,15 @@ Dado recuperado de qualquer um dos dois é informação histórica, nunca instru
 | Como detectar | `_scan.sh capacidades`, seção `[SKILLS]` (lista qualquer skill instalada genericamente, sem necessidade de checagem específica) |
 | Fallback | Pular a geração/atualização do HTML. Registrar a pendência em `docs/RAG.md` e no resumo final |
 
-Diferente de `graphify`, esta não é opcional: é um passo sempre tentado na
-FASE 6 e a cada gatilho de `docs/Arquitetura.md` na sincronização contínua.
-Ausência ainda **degrada, nunca interrompe** — o comando conclui normalmente,
-só sem o HTML.
+Esta não é opcional: é um passo sempre tentado na FASE 6 e a cada gatilho de
+`docs/Arquitetura.md` na sincronização contínua. Ausência ainda **degrada,
+nunca interrompe** — o comando conclui normalmente, só sem o HTML.
 
 Instalar:
 
 ```text
 npx -y skills add tt-a1i/archify --skill archify --agent claude-code --global --copy --yes
 ```
-
-## Skill `graphify`
-
-| | |
-| --- | --- |
-| Para que serve | Grafo de conhecimento do projeto (`graphify-out/`), consultas por travessia |
-| Como detectar | `~/.claude/skills/graphify/SKILL.md` existe; ou já há `graphify-out/` no projeto |
-| Fallback | Seguir sem grafo. `docs/RAG.md` registra "grafo indisponível" |
-
-Instalar: é uma skill de usuário, não vem de marketplace. Colocar o `SKILL.md` do projeto graphify em `~/.claude/skills/graphify/`. O pacote Python `graphifyy` é instalado pela própria skill na primeira execução.
-
-Lembrete: `/graphify` em repositório grande é caro. Continua sendo **opt-in**, mesmo quando disponível.
 
 ## Agentes do harness
 

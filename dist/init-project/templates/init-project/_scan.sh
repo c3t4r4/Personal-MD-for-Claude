@@ -199,7 +199,7 @@ scan_projeto() {
 
   local PRUNE='-name node_modules -o -name .git -o -name target -o -name dist -o -name build
                -o -name .next -o -name vendor -o -name venv -o -name .venv
-               -o -name __pycache__ -o -name graphify-out -o -name coverage'
+               -o -name __pycache__ -o -name coverage'
 
   echo
   echo "[MANIFESTOS]"
@@ -277,7 +277,7 @@ scan_projeto() {
   # projeto não-Rust. --exclude-dir é defesa adicional para quando roda.
   if printf '%s\n%s\n' "$manifestos" "$locks" | grep -q 'Cargo\.'; then
     if grep -rlsq --include='*.rs' \
-        --exclude-dir={node_modules,.git,target,dist,build,.next,vendor,venv,.venv,__pycache__,graphify-out,coverage} \
+        --exclude-dir={node_modules,.git,target,dist,build,.next,vendor,venv,.venv,__pycache__,coverage} \
         '#\[cfg(test)\]' . 2>/dev/null; then
       echo "testes_inline_rust: sim"
     fi
@@ -327,10 +327,6 @@ scan_projeto() {
   for d in RegrasNegocio Arquitetura Organograma RAG Harness Progresso Memoria API Frontend Auth Infraestrutura; do
     echo "docs/$d.md: $(existe "docs/$d.md")"
   done
-
-  echo
-  echo "[RAG]"
-  echo "graphify-out/: $(existe graphify-out)"
 
   echo
   echo "[GIT]"
@@ -423,8 +419,6 @@ $(printf '%s\n' "$dados" | _campo alteracoes_nao_commitadas) alteracao(oes) nao 
   else
     echo "git: nao versionado"
   fi
-
-  echo "graphify-out: $(printf '%s\n' "$dados" | _campo 'graphify-out/')"
 
   if [ "$(printf '%s\n' "$dados" | _campo alerta_env_versionado)" = "sim" ]; then
     echo "ALERTA: ha arquivo .env NAO ignorado pelo git"

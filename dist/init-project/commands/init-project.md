@@ -131,7 +131,6 @@ Montar a tabela e apresentá-la:
 | --- | --- | --- |
 | MCP de memória (`claude-mem` ou `ai-memory`) | corpora/`smart_search`/`observation_search` (claude-mem) ou `memory_query`/`memory_recent` (ai-memory) | Glob/Grep com escopo; `docs/RAG.md` registra "sem backend de RAG" |
 | skill `archify` (indispensável) | gerar/atualizar `docs/arquitetura.html` a partir de `docs/Arquitetura.md` | pular a geração, registrar pendência em `docs/RAG.md` e no resumo final |
-| skill `graphify` | grafo opcional do projeto | segue sem grafo, registrado em `docs/RAG.md` |
 | agentes do harness | delegação nos pontos caros | papéis executados inline |
 | skill `ui-ux-pro-max` | apoio ao `docs/Frontend.md` | design system vem da entrevista |
 
@@ -174,7 +173,7 @@ Nenhuma destas leituras depende do resultado de outra: emitir todas em lote, com
 
 ## FASE 2 — Detecção em uma passada
 
-**Uma chamada, não quinze.** O script faz a varredura estrutural inteira — manifestos, locks, Docker, build, diretórios de código e teste, migrações, contratos de API, ambiente, governança, `graphify-out/`, Git e volume:
+**Uma chamada, não quinze.** O script faz a varredura estrutural inteira — manifestos, locks, Docker, build, diretórios de código e teste, migrações, contratos de API, ambiente, governança, Git e volume:
 
 ```bash
 bash ~/.claude/templates/init-project/_scan.sh projeto
@@ -454,11 +453,10 @@ Não inventar regra. O esqueleto existe para ser preenchido conforme o trabalho 
 
 ## FASE 7 — Indexação e RAG
 
-1. **Reaproveitar a detecção da FASE 0.5** — backend disponível e `graphify-out/` já foram levantados. Não detectar de novo. Se nenhum backend (`claude-mem`/`ai-memory`) estiver disponível, registrar o fallback em `docs/RAG.md` e pular direto ao passo 5.
+1. **Reaproveitar a detecção da FASE 0.5** — backend disponível já foi levantado. Não detectar de novo. Se nenhum backend (`claude-mem`/`ai-memory`) estiver disponível, registrar o fallback em `docs/RAG.md` e pular direto ao passo 5.
 2. **Definir exclusões** antes de qualquer indexação: `.env`, secrets, chaves, certificados, tokens, dumps e fixtures com dados pessoais, logs de produção.
 3. **Perguntar antes de qualquer operação cara.** Nunca executar automaticamente:
-   - `/learn-codebase` lê todo arquivo-fonte na íntegra — só com confirmação explícita;
-   - `/graphify` sobre um repositório grande — só com confirmação explícita.
+   - `/learn-codebase` lê todo arquivo-fonte na íntegra — só com confirmação explícita.
 4. **Construir os corpora**, se autorizado:
    - `<projeto>-geral` — visão geral do projeto;
    - `<projeto>-regras` — `types=decision,feature`, apoio ao `RegrasNegocio.md`.
@@ -476,7 +474,7 @@ Não inventar regra. O esqueleto existe para ser preenchido conforme o trabalho 
 Verificar e **perguntar antes de agir**:
 
 - É repositório Git? Se não, perguntar se deve inicializar.
-- `.gitignore` cobre `.env`, secrets, artefatos de build, `node_modules`, `target/`, `graphify-out/`? Propor as adições; não aplicar sem confirmação.
+- `.gitignore` cobre `.env`, secrets, artefatos de build, `node_modules`, `target/`? Propor as adições; não aplicar sem confirmação.
 - Branch principal e de desenvolvimento conforme decidido.
 - Commit inicial apenas se o usuário autorizar.
 
