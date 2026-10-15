@@ -9,7 +9,8 @@
 # Uso:
 #   install-init-project.sh [caminho/para/pasta-do-pacote]
 #
-# Sem argumento, usa ~/.claude/initProjectsInstall/dist/init-project/.
+# Sem argumento, usa a pasta dist/init-project/ ao lado deste script (gerada
+# por package-init-project.sh).
 
 set -uo pipefail
 # Sem "set -e" de propósito: o laço de perguntas interativas usa "read" e
@@ -17,9 +18,9 @@ set -uo pipefail
 # o que sob "set -e" abortaria o script. Cada comando relevante trata seu
 # próprio erro explicitamente.
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 CLAUDE_HOME="${HOME}/.claude"
-DIST_DIR="${CLAUDE_HOME}/initProjectsInstall/dist"
-DEFAULT_PACKAGE_DIR="${DIST_DIR}/init-project"
+DEFAULT_PACKAGE_DIR="${SCRIPT_DIR}/dist/init-project"
 
 FILES=(
   "CLAUDE.md"
@@ -44,17 +45,11 @@ FILES=(
 
 PACKAGE_DIR="${1:-${DEFAULT_PACKAGE_DIR}}"
 
-if [[ "${PACKAGE_DIR}" == "~/.claude/initProjectsInstall/dist/init-project" ]]; then
-  if [[ ! -d "${PACKAGE_DIR}" ]]; then
-    mkdir -p "${PACKAGE_DIR}"
-    echo "==> Criada pasta padrão de pacote: ${PACKAGE_DIR}"
-  fi
-fi
-
 if [[ ! -d "${PACKAGE_DIR}" ]]; then
   echo "ERRO: pasta de pacote não encontrada: ${PACKAGE_DIR}" >&2
   echo "Uso: $0 [caminho/para/pasta-do-pacote]" >&2
-  echo "Sem argumento, espera encontrar: ${DEFAULT_PACKAGE_DIR}" >&2
+  echo "Sem argumento, espera encontrar dist/init-project ao lado deste script: ${DEFAULT_PACKAGE_DIR}" >&2
+  echo "Se essa pasta não existir, rode ./package-init-project.sh primeiro (ou informe outro caminho)." >&2
   exit 1
 fi
 
@@ -308,4 +303,51 @@ if [[ -f "${SETTINGS_JSON}" ]]; then
   fi
 else
   echo "indisponivel: ${SETTINGS_JSON} não encontrado — hook RTK não verificado."
+fi
+
+# --- Verificação de atualização (GitHub Release) ----------------------------
+# Puramente informativa, best-effort: sem rede, sem curl ou sem release
+# publicada, apenas avisa e segue — nunca altera o código de saída.
+
+REPO_SLUG="c3t4r4/Personal-MD-for-Claude"
+
+version_gt() {
+  # Retorna sucesso (0) se $1 > $2, comparando major.minor.patch numericamente.
+  local a="${1#v}" b="${2#v}"
+  a="${a%%[-+]*}"; b="${b%%[-+]*}"
+  local a1 a2 a3 b1 b2 b3
+  IFS='.' read -r a1 a2 a3 _ <<< "${a}"
+  IFS='.' read -r b1 b2 b3 _ <<< "${b}"
+  a1=${a1//[^0-9]/}; a2=${a2//[^0-9]/}; a3=${a3//[^0-9]/}
+  b1=${b1//[^0-9]/}; b2=${b2//[^0-9]/}; b3=${b3//[^0-9]/}
+  a1=${a1:-0}; a2=${a2:-0}; a3=${a3:-0}
+  b1=${b1:-0}; b2=${b2:-0}; b3=${b3:-0}
+  if (( a1 != b1 )); then (( a1 > b1 )); return; fi
+  if (( a2 != b2 )); then (( a2 > b2 )); return; fi
+  (( a3 > b3 ))
+}
+
+echo ""
+echo "-- Verificação de atualização --"
+
+LOCAL_VERSION=""
+if [[ -f "${PACKAGE_DIR}/VERSION" ]]; then
+  LOCAL_VERSION="$(tr -d '[:space:]' < "${PACKAGE_DIR}/VERSION")"
+fi
+
+if [[ -z "${LOCAL_VERSION}" ]]; then
+  echo "indisponivel: este pacote não traz um arquivo VERSION (gerado antes desta checagem existir) — não foi possível comparar."
+elif ! command -v curl >/dev/null 2>&1; then
+  echo "indisponivel: 'curl' não encontrado no PATH — não foi possível checar atualizações."
+else
+  RELEASE_JSON="$(curl -fsSL --max-time 5 "https://api.github.com/repos/${REPO_SLUG}/releases/latest" 2>/dev/null || true)"
+  REMOTE_VERSION="$(printf '%s' "${RELEASE_JSON}" | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' | head -n1)"
+
+  if [[ -z "${REMOTE_VERSION}" ]]; then
+    echo "indisponivel: não foi possível obter a última release de ${REPO_SLUG} (sem rede, ou nenhuma release publicada ainda)."
+  elif version_gt "${REMOTE_VERSION}" "${LOCAL_VERSION}"; then
+    echo "atualizacao disponivel: v${LOCAL_VERSION#v} -> ${REMOTE_VERSION} — https://github.com/${REPO_SLUG}/releases/latest"
+  else
+    echo "ok: pacote atualizado (v${LOCAL_VERSION#v}, última release: ${REMOTE_VERSION})"
+  fi
 fi

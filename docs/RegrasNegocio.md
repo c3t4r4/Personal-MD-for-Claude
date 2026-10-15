@@ -73,14 +73,15 @@ Não há telas. As regras são do instalador de linha de comando.
 
 ### RN-INSTALADOR-006 — Destino no Windows
 
-- **Status:** `confirmada`
+- **Status:** `revogada` (2026-10-15)
 - **Enunciado:** No Windows 11 o destino é `%USERPROFILE%\.claude`. Sem argumento, o pacote procurado é `%USERPROFILE%\.claude\initProjectsInstall\dist\init-project`. Se essa pasta não existir, o instalador a cria e em seguida aplica RN-INSTALADOR-001.
-- **Rastreabilidade:** `install-init-project.ps1`
+- **Motivo da revogação:** o caminho padrão do pacote deixou de depender de `~/.claude`/`%USERPROFILE%\.claude` — ver RN-INSTALADOR-011. O destino da instalação (`%USERPROFILE%\.claude`) continua o mesmo; só o caminho padrão do **pacote de origem** mudou.
+- **Rastreabilidade:** nenhuma (comportamento substituído por RN-INSTALADOR-011).
 
 ### RN-INSTALADOR-007 — Capacidades no Windows
 
 - **Status:** `confirmada`
-- **Enunciado:** `_scan.sh capacidades` roda por Git Bash ou, se esse não existir, por WSL, com `CLAUDE_CONFIG_DIR` apontando para `%USERPROFILE%\.claude`. Sem os dois, o relatório avisa e a instalação dos 18 arquivos permanece válida.
+- **Enunciado:** `_scan.sh capacidades` só roda quando o `bash` resolvido no PATH é identificável como Git Bash (caminho contém `\Git\`) ou WSL (caminho contém `\System32\`). Git Bash chama `_scan.sh` direto, sem variável extra (resolve `$HOME` sozinho). WSL recebe `CLAUDE_CONFIG_DIR` traduzido para `/mnt/<drive>/...` — sem isso, o `$HOME` do WSL é o do Linux, não o do Windows, e a varredura leria o perfil errado em vez de avisar. Se `%USERPROFILE%` não for um caminho de unidade com letra (`X:\...` — ex.: perfil de rede/UNC `\\servidor\compartilhamento`), a tradução falha explicitamente e a checagem é pulada com aviso, em vez de montar um `/mnt/...` adivinhado. Qualquer outro `bash` (ex.: Cygwin) ou nenhum `bash` no PATH: o relatório avisa `AVISO` e pula a checagem, em vez de arriscar um resultado incorreto. A instalação dos 18 arquivos permanece válida em qualquer caso.
 - **Rastreabilidade:** `install-init-project.ps1`, `dist/init-project/templates/init-project/_scan.sh`
 
 ### RN-INSTALADOR-008 — Componentes opcionais só com sim
@@ -103,6 +104,24 @@ Não há telas. As regras são do instalador de linha de comando.
 - **Motivo da revogação:** mesma reescrita de `install-init-project.ps1` que revogou RN-INSTALADOR-009 — a checagem explícita de "destino é pasta" não existe mais no script atual. `install-init-project.sh` nunca a teve.
 - **Rastreabilidade:** nenhuma (comportamento removido).
 
+### RN-INSTALADOR-011 — Pacote padrão ao lado do script
+
+- **Status:** `confirmada`
+- **Enunciado:** Sem argumento, `install-init-project.sh`, `install-init-project.ps1` e `package-init-project.sh` resolvem `dist/init-project/` (e, no caso de `package-init-project.sh`, só `dist/`) relativo à própria pasta do script — nunca a `~/.claude`/`%USERPROFILE%\.claude`. Se a pasta padrão não existir, o instalador encerra com erro explicando que falta rodar `package-init-project.sh` primeiro, em vez de criar uma pasta vazia.
+- **Rastreabilidade:** `install-init-project.sh`, `install-init-project.ps1`, `package-init-project.sh`
+
+### RN-INSTALADOR-012 — Verificação de atualização via GitHub Release
+
+- **Status:** `confirmada`
+- **Enunciado:** Ao final da instalação, `install-init-project.sh` e `install-init-project.ps1` comparam a versão em `dist/init-project/VERSION` (dentro do pacote usado) com a última GitHub Release de `c3t4r4/Personal-MD-for-Claude`. A chamada é best-effort, com timeout curto: sem rede, sem `VERSION` no pacote (pacotes antigos não o têm) ou sem nenhuma release publicada, o instalador avisa `indisponivel` com o motivo e segue — nunca altera o código de saída nem impede a instalação. `VERSION` não é um dos 18 arquivos instalados em `~/.claude` (não entra no array `FILES`): é metadado do próprio pacote, mantido manualmente pelo mantenedor.
+- **Rastreabilidade:** `install-init-project.sh`, `install-init-project.ps1`, `dist/init-project/VERSION`
+
+### RN-INSTALADOR-013 — Pacote completo antes de uma release
+
+- **Status:** `confirmada`
+- **Enunciado:** `release-init-project.sh` só publica uma release depois de confirmar que todo caminho listado no array `FILES` de `install-init-project.sh` existe dentro de `dist/init-project/`, e que os três arrays `FILES`/`$Files` (`install-init-project.sh`, `package-init-project.sh`, `install-init-project.ps1`) são idênticos. Qualquer divergência ou arquivo faltante aborta a release antes de qualquer tag, push ou publicação.
+- **Rastreabilidade:** `release-init-project.sh`
+
 ---
 
 ## Histórico
@@ -111,3 +130,4 @@ Não há telas. As regras são do instalador de linha de comando.
 | --- | --- |
 | 2026-10-06 | Criado com RN-INSTALADOR-001 a RN-INSTALADOR-010, ao adicionar o instalador Windows 11. |
 | 2026-10-15 | RN-INSTALADOR-009 e RN-INSTALADOR-010 revogadas — removidas na reescrita de `install-init-project.ps1`. RN-INSTALADOR-008 ampliada para cobrir a instalação de RTK por OS também em `install-init-project.sh`. |
+| 2026-10-15 | RN-INSTALADOR-006 revogada (caminho padrão do pacote deixou de depender de `~/.claude`). RN-INSTALADOR-007 reescrita (detecção Git Bash vs. WSL restaurada, com tradução de `CLAUDE_CONFIG_DIR` só para WSL). Criadas RN-INSTALADOR-011 (pacote padrão ao lado do script), RN-INSTALADOR-012 (verificação de atualização via GitHub Release) e RN-INSTALADOR-013 (pacote completo antes de release), ao corrigir o caminho padrão hardcoded e adicionar `release-init-project.sh`. |

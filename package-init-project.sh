@@ -8,16 +8,17 @@
 # instalar lá com install-init-project.sh.
 #
 # Uso:
-#   ~/.claude/initProjectsInstall/package-init-project.sh
+#   ./package-init-project.sh
 #
-# A cada execução, dist/init-project/ é substituída inteiramente pelo
-# conteúdo atual de ~/.claude — não guarda histórico de versões anteriores.
+# A cada execução, dist/init-project/ (ao lado deste script) é substituída
+# inteiramente pelo conteúdo atual de ~/.claude — não guarda histórico de
+# versões anteriores.
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 CLAUDE_HOME="${HOME}/.claude"
-INSTALL_DIR="${CLAUDE_HOME}/initProjectsInstall"
-DIST_DIR="${INSTALL_DIR}/dist"
+DIST_DIR="${SCRIPT_DIR}/dist"
 PACKAGE_DIR="${DIST_DIR}/init-project"
 
 FILES=(
@@ -75,6 +76,16 @@ for rel in "${FILES[@]}"; do
 done
 
 chmod 755 "${STAGE_DIR}/templates/init-project/_scan.sh"
+
+# VERSION não é um dos arquivos instalados em ~/.claude (não entra em FILES);
+# vive só dentro do pacote (dist/init-project/VERSION) e é mantido manualmente
+# pelo mantenedor (bump + entrada em CHANGELOG.md antes de uma release — ver
+# release-init-project.sh). Reempacotar não deve apagar o valor atual.
+if [[ -f "${PACKAGE_DIR}/VERSION" ]]; then
+  cp "${PACKAGE_DIR}/VERSION" "${STAGE_DIR}/VERSION"
+else
+  echo "AVISO: ${PACKAGE_DIR}/VERSION não encontrado — pacote será gerado sem VERSION (checagem de atualização ficará indisponível até criar esse arquivo manualmente)." >&2
+fi
 
 echo "==> Publicando em ${PACKAGE_DIR}"
 

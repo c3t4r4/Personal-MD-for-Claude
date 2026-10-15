@@ -10,7 +10,8 @@
 # Uso:
 #   .\install-init-project.ps1 [caminho\para\pasta-do-pacote]
 #
-# Sem argumento, usa $HOME\.claude\initProjectsInstall\dist\init-project\.
+# Sem argumento, usa a pasta dist\init-project\ ao lado deste script (gerada
+# por package-init-project.sh).
 # Requer PowerShell 5.1+ (Windows) ou PowerShell 7+ (qualquer SO, usado aqui
 # só para desenvolvimento/teste deste script — o alvo real é Windows).
 
@@ -23,8 +24,7 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $ClaudeHome = Join-Path $HOME '.claude'
-$DistDir = Join-Path (Join-Path $ClaudeHome 'initProjectsInstall') 'dist'
-$DefaultPackageDir = Join-Path $DistDir 'init-project'
+$DefaultPackageDir = Join-Path $PSScriptRoot (Join-Path 'dist' 'init-project')
 
 $UsedDefault = $false
 if ([string]::IsNullOrWhiteSpace($PackageDir)) {
@@ -61,15 +61,11 @@ function ConvertTo-NativePath {
     return $RelativePath.Replace('/', [IO.Path]::DirectorySeparatorChar)
 }
 
-if ($UsedDefault -and -not (Test-Path -LiteralPath $PackageDir)) {
-    New-Item -ItemType Directory -Force -Path $PackageDir | Out-Null
-    Write-Host "==> Criada pasta padrão de pacote: $PackageDir"
-}
-
 if (-not (Test-Path -LiteralPath $PackageDir -PathType Container)) {
     Write-Host "ERRO: pasta de pacote não encontrada: $PackageDir" -ForegroundColor Red
     Write-Host "Uso: $($MyInvocation.MyCommand.Name) [caminho\para\pasta-do-pacote]" -ForegroundColor Red
-    Write-Host "Sem argumento, espera encontrar: $DefaultPackageDir" -ForegroundColor Red
+    Write-Host "Sem argumento, espera encontrar dist\init-project ao lado deste script: $DefaultPackageDir" -ForegroundColor Red
+    Write-Host "Se essa pasta não existir, rode package-init-project.sh primeiro (ou informe outro caminho)." -ForegroundColor Red
     exit 1
 }
 
@@ -199,12 +195,57 @@ Write-Host '==> Verificação de componentes usados pelo /init-project'
 Write-Host ''
 
 Write-Host '-- Agentes, skills, plugins e marketplaces --'
+
+function ConvertTo-WslPath {
+    # C:\Users\nome\.claude -> /mnt/c/Users/nome/.claude — só vale para bash do WSL,
+    # que não compartilha $HOME nem conversão automática de caminho com o Windows
+    # (diferente do Git Bash/MSYS2, que já resolve $HOME certo sozinho).
+    # Retorna $null para qualquer caminho que não seja unidade com letra (ex.: UNC
+    # \\servidor\compartilhamento, de perfil de rede/roaming) — nesse caso o
+    # chamador deve degradar com aviso, nunca montar um /mnt/... adivinhado.
+    param([string]$WindowsPath)
+    if ($WindowsPath -notmatch '^[A-Za-z]:\\') {
+        return $null
+    }
+    $drive = $WindowsPath.Substring(0, 1).ToLower()
+    $rest = $WindowsPath.Substring(2) -replace '\\', '/'
+    return "/mnt/$drive$rest"
+}
+
 $bashCmd = Get-Command bash -ErrorAction SilentlyContinue
-if ($bashCmd -and (Test-Path -LiteralPath $scanSh)) {
-    & $bashCmd.Source $scanSh capacidades
+if (-not $bashCmd -or -not (Test-Path -LiteralPath $scanSh)) {
+    Write-Host 'AVISO: _scan.sh depende de bash (Git for Windows ou WSL). Sem bash no PATH, não foi possível checar agentes/skills/plugins — e o hook sessionStart também não vai rodar até o bash estar disponível.' -ForegroundColor Yellow
 }
 else {
-    Write-Host 'AVISO: _scan.sh depende de bash (Git for Windows ou WSL). Sem bash no PATH, não foi possível checar agentes/skills/plugins — e o hook sessionStart também não vai rodar até o bash estar disponível.' -ForegroundColor Yellow
+    # Git Bash/MSYS2 resolve $HOME sozinho (ex.: /c/Users/nome) e entende os
+    # caminhos que passamos como argumento — chama direto, sem variável extra.
+    # O bash do WSL tem $HOME próprio do Linux; sem CLAUDE_CONFIG_DIR traduzido
+    # para /mnt/<drive>/..., _scan.sh acabaria lendo o perfil errado em vez de
+    # avisar — por isso aqui a conversão é explícita. Qualquer outro bash
+    # (ex.: Cygwin) é tratado como caso ambíguo e degrada com aviso, em vez de
+    # arriscar um relatório incorreto.
+    $bashPath = $bashCmd.Source
+    if ($bashPath -match '\\System32\\') {
+        $claudeHomeWslRaw = ConvertTo-WslPath $ClaudeHome
+        $scanShWslRaw = ConvertTo-WslPath $scanSh
+        if ($null -eq $claudeHomeWslRaw -or $null -eq $scanShWslRaw) {
+            Write-Host "AVISO: bash identificado como WSL, mas $ClaudeHome não é um caminho de unidade com letra (ex.: perfil de rede/UNC) — para evitar um relatório incorreto, a checagem de agentes/skills/plugins foi pulada." -ForegroundColor Yellow
+        }
+        else {
+            # Escapa aspas simples antes de montar a string do -c: um perfil do
+            # Windows com aspas simples no caminho (raro, mas válido) não deve
+            # quebrar a citação do bash nem virar injeção de comando.
+            $claudeHomeWsl = $claudeHomeWslRaw -replace "'", "'\\''"
+            $scanShWsl = $scanShWslRaw -replace "'", "'\\''"
+            & $bashCmd.Source -c "CLAUDE_CONFIG_DIR='$claudeHomeWsl' '$scanShWsl' capacidades"
+        }
+    }
+    elseif ($bashPath -match '(?i)\\Git\\') {
+        & $bashCmd.Source $scanSh capacidades
+    }
+    else {
+        Write-Host "AVISO: bash encontrado em $bashPath não foi identificado como Git Bash nem WSL — para evitar um relatório incorreto, a checagem de agentes/skills/plugins foi pulada." -ForegroundColor Yellow
+    }
 }
 
 Write-Host ''
@@ -293,4 +334,54 @@ if (Test-Path -LiteralPath $settingsJson) {
 }
 else {
     Write-Host "indisponivel: $settingsJson não encontrado — hook RTK não verificado."
+}
+
+# --- Verificação de atualização (GitHub Release) -----------------------------
+# Puramente informativa, best-effort: sem rede ou sem release publicada,
+# apenas avisa e segue — nunca altera o código de saída.
+
+function Test-VersionGreaterThan {
+    param([string]$A, [string]$B)
+    $aClean = ($A.TrimStart('v') -split '[-+]')[0]
+    $bClean = ($B.TrimStart('v') -split '[-+]')[0]
+    # Campo sem dígito (tag_name mal formado) vira 0 em vez de lançar exceção —
+    # isto é só uma checagem informativa, nunca pode interromper o script.
+    $aParts = $aClean -split '\.' | ForEach-Object { $d = $_ -replace '[^0-9]', ''; if ($d) { [int]$d } else { 0 } }
+    $bParts = $bClean -split '\.' | ForEach-Object { $d = $_ -replace '[^0-9]', ''; if ($d) { [int]$d } else { 0 } }
+    for ($i = 0; $i -lt 3; $i++) {
+        $av = if ($i -lt $aParts.Count) { $aParts[$i] } else { 0 }
+        $bv = if ($i -lt $bParts.Count) { $bParts[$i] } else { 0 }
+        if ($av -ne $bv) { return $av -gt $bv }
+    }
+    return $false
+}
+
+Write-Host ''
+Write-Host '-- Verificação de atualização --'
+
+$repoSlug = 'c3t4r4/Personal-MD-for-Claude'
+$versionFile = Join-Path $PackageDir 'VERSION'
+
+if (-not (Test-Path -LiteralPath $versionFile)) {
+    Write-Host 'indisponivel: este pacote não traz um arquivo VERSION (gerado antes desta checagem existir) — não foi possível comparar.'
+}
+else {
+    $localVersion = (Get-Content -LiteralPath $versionFile -Raw).Trim()
+    try {
+        $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$repoSlug/releases/latest" -TimeoutSec 5 -ErrorAction Stop
+        $remoteVersion = $release.tag_name
+    }
+    catch {
+        $remoteVersion = $null
+    }
+
+    if ([string]::IsNullOrWhiteSpace($remoteVersion)) {
+        Write-Host "indisponivel: não foi possível obter a última release de $repoSlug (sem rede, ou nenhuma release publicada ainda)."
+    }
+    elseif (Test-VersionGreaterThan -A $remoteVersion -B $localVersion) {
+        Write-Host "atualizacao disponivel: v$localVersion -> $remoteVersion — https://github.com/$repoSlug/releases/latest"
+    }
+    else {
+        Write-Host "ok: pacote atualizado (v$localVersion, última release: $remoteVersion)"
+    }
 }
