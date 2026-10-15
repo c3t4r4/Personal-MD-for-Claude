@@ -62,7 +62,7 @@ Já possui histórico; existe remote; branch principal `main`; branch de desenvo
 
 ## Organização
 
-Criar ou atualizar README; LICENSE; CONTRIBUTING; SECURITY; documentação de deploy; documentação de variáveis de ambiente; requisitos de LGPD, auditoria ou compliance.
+README existe e reflete o projeto (12º documento da sincronização); LICENSE; CONTRIBUTING; SECURITY; documentação de deploy; documentação de variáveis de ambiente; requisitos de LGPD, auditoria ou compliance.
 
 ---
 

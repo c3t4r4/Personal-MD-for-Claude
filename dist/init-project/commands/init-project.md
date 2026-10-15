@@ -38,7 +38,7 @@ Instruções globais e documentação local verificadas. Iniciando a análise do
 
 `/init-project` **cria e audita** a estrutura de governança. Ele não é o que mantém a documentação em dia.
 
-A manutenção contínua é regida pela seção `Sincronização obrigatória de documentação` de `~/.claude/CLAUDE.md`: ao fim de **toda** implementação, os onze documentos são avaliados pela tabela de gatilhos e cada um recebe um estado explícito — `atualizado`, `criado`, `sem alteração` ou `n/a`. Documento condicional ausente cujo gatilho disparou é criado na hora, a partir do template correspondente, sem esperar por este comando.
+A manutenção contínua é regida pela seção `Sincronização obrigatória de documentação` de `~/.claude/CLAUDE.md`: ao fim de **toda** implementação, os doze documentos são avaliados pela tabela de gatilhos e cada um recebe um estado explícito — `atualizado`, `criado`, `sem alteração` ou `n/a`. Documento condicional ausente cujo gatilho disparou é criado na hora, a partir do template correspondente, sem esperar por este comando.
 
 Se a auditoria deste comando encontrar documentação defasada, isso é sintoma de sincronização não executada — reportar como tal, e não apenas corrigir.
 
@@ -121,15 +121,15 @@ bash ~/.claude/templates/init-project/_scan.sh capacidades
 
 Este modo **não é cacheado**, de propósito: a invalidação natural seria o mtime de `agents/` e `skills/`, que não muda quando um frontmatter é editado no lugar — justamente o caso que a varredura precisa detectar. É também o modo barato, então não há o que economizar.
 
-E tentar `list_corpora` — a única capacidade que o script não consegue verificar, por ser MCP.
+E tentar `list_corpora` (claude-mem) e/ou `memory_status` (ai-memory) — as únicas capacidades que o script não consegue verificar, por serem MCP.
 
-Esta chamada e a tentativa de `list_corpora` não dependem de nada da FASE 1 (nem o contrário) — emitir junto com as leituras da FASE 1 na mesma mensagem, em vez de esperar uma fase terminar para começar a outra.
+Esta chamada e a tentativa de `list_corpora`/`memory_status` não dependem de nada da FASE 1 (nem o contrário) — emitir junto com as leituras da FASE 1 na mesma mensagem, em vez de esperar uma fase terminar para começar a outra.
 
 Montar a tabela e apresentá-la:
 
 | Capacidade | Uso | Se faltar |
 | --- | --- | --- |
-| MCP `claude-mem` | corpora, `smart_search`, `observation_search` | Glob/Grep com escopo; `docs/RAG.md` registra "sem backend de RAG" |
+| MCP de memória (`claude-mem` ou `ai-memory`) | corpora/`smart_search`/`observation_search` (claude-mem) ou `memory_query`/`memory_recent` (ai-memory) | Glob/Grep com escopo; `docs/RAG.md` registra "sem backend de RAG" |
 | skill `archify` (indispensável) | gerar/atualizar `docs/arquitetura.html` a partir de `docs/Arquitetura.md` | pular a geração, registrar pendência em `docs/RAG.md` e no resumo final |
 | skill `graphify` | grafo opcional do projeto | segue sem grafo, registrado em `docs/RAG.md` |
 | agentes do harness | delegação nos pontos caros | papéis executados inline |
@@ -209,7 +209,7 @@ Se a saída trouxer `sugerir_delegacao: sim` (mais de ~500 arquivos de código o
 
 ### Saída
 
-Resumo estruturado com stack, gerenciador, banco, ORM, autenticação, API, Docker, testes, telas detectadas, migrações, Git e backend de RAG.
+Resumo estruturado com stack, gerenciador, banco, ORM, autenticação, API, Docker, testes, telas detectadas, migrações, Git, backend de RAG e desvios em relação às preferências de stack (informativo — não vira pergunta obrigatória na entrevista, só confirma quando houver lacuna real).
 
 **Não modificar nada nesta fase.**
 
@@ -388,6 +388,7 @@ Estado **previsto** de cada documento ao fim desta tarefa. Seção obrigatória 
 | `docs/Progresso.md` | atualizado | sempre |
 | `docs/Memoria.md` | [ESTADO] | [MOTIVO] |
 | `docs/Harness.md` | [ESTADO] | [MOTIVO] |
+| `README.md` | [ESTADO] | [MOTIVO] |
 
 ## Validação
 
@@ -425,6 +426,7 @@ Cada template é um arquivo próprio em `~/.claude/templates/init-project/`, no 
 | `docs/Frontend.md` | `Frontend.md.tpl.md` | Há frontend |
 | `docs/Auth.md` | `Auth.md.tpl.md` | Há autenticação |
 | `docs/Infraestrutura.md` | `Infraestrutura.md.tpl.md` | Há Docker, deploy ou infraestrutura gerenciada |
+| `README.md` | — (sem template dedicado; estrutura mínima descrita em `CLAUDE.md`) | Sempre |
 
 ### Preenchimento
 
@@ -452,7 +454,7 @@ Não inventar regra. O esqueleto existe para ser preenchido conforme o trabalho 
 
 ## FASE 7 — Indexação e RAG
 
-1. **Reaproveitar a detecção da FASE 0.5** — backend disponível e `graphify-out/` já foram levantados. Não detectar de novo. Se `claude-mem` estiver ausente, registrar o fallback em `docs/RAG.md` e pular direto ao passo 5.
+1. **Reaproveitar a detecção da FASE 0.5** — backend disponível e `graphify-out/` já foram levantados. Não detectar de novo. Se nenhum backend (`claude-mem`/`ai-memory`) estiver disponível, registrar o fallback em `docs/RAG.md` e pular direto ao passo 5.
 2. **Definir exclusões** antes de qualquer indexação: `.env`, secrets, chaves, certificados, tokens, dumps e fixtures com dados pessoais, logs de produção.
 3. **Perguntar antes de qualquer operação cara.** Nunca executar automaticamente:
    - `/learn-codebase` lê todo arquivo-fonte na íntegra — só com confirmação explícita;
@@ -460,6 +462,7 @@ Não inventar regra. O esqueleto existe para ser preenchido conforme o trabalho 
 4. **Construir os corpora**, se autorizado:
    - `<projeto>-geral` — visão geral do projeto;
    - `<projeto>-regras` — `types=decision,feature`, apoio ao `RegrasNegocio.md`.
+   Com apenas `ai-memory` disponível, não há corpus a construir: pular para o passo 5 e registrar o workspace/projeto resolvido pelo `ai-memory` em `docs/RAG.md`.
 5. **Escrever `docs/RAG.md`** refletindo o estado **real**: o que existe, o que não existe, o que foi recusado. Se nada foi indexado, registrar isso e o fallback (Glob/Grep com escopo).
 
 `smart_search` não exige indexação — funciona direto sobre o disco e é sempre a primeira opção para localizar código.
@@ -505,6 +508,7 @@ Proibido, sem exceção: `git reset` destrutivo, remoção de branch, alteraçã
 - [ ] `CLAUDE.md` gerado tem a seção `Sincronização de documentação` com a tabela de gatilhos e o estado inicial dos condicionais preenchido
 - [ ] `docs/Harness.md` gerado tem a tabela de sincronização no Coder e a verificação correspondente no Validator
 - [ ] Plano salvo em `.claude/plans/`, com a seção `Sincronização de documentação` preenchida
+- [ ] `README.md` existe e reflete o projeto (12º documento da sincronização)
 
 ### Resumo final
 

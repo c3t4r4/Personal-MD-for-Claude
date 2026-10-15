@@ -1,20 +1,32 @@
 @echo off
-setlocal EnableExtensions
-rem Instalador Windows 11 do comando /init-project.
-rem Chama install-init-project.ps1 com ExecutionPolicy Bypass so neste processo.
+REM install-init-project.cmd
+REM
+REM Launcher para quem prefere clicar duas vezes em vez de abrir o PowerShell
+REM na mao. So repassa os argumentos para install-init-project.ps1, que faz
+REM todo o trabalho real (ver esse arquivo para a logica completa).
+REM
+REM Uso:
+REM   install-init-project.cmd [caminho\para\pasta-do-pacote]
 
-set "SCRIPT=%~dp0install-init-project.ps1"
-if not exist "%SCRIPT%" (
-  echo ERRO: nao encontrado: %SCRIPT% 1>&2
-  exit /b 1
+setlocal
+
+set "SCRIPT_DIR=%~dp0"
+set "PS1=%SCRIPT_DIR%install-init-project.ps1"
+
+if not exist "%PS1%" (
+  echo ERRO: nao encontrei "%PS1%" ao lado deste .cmd.
+  goto :fim
 )
 
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%SCRIPT%" %*
-set "RC=%ERRORLEVEL%"
+where pwsh >nul 2>nul
+if %ERRORLEVEL%==0 (
+  pwsh -NoProfile -ExecutionPolicy Bypass -File "%PS1%" %*
+) else (
+  powershell -NoProfile -ExecutionPolicy Bypass -File "%PS1%" %*
+)
 
-rem Duplo clique abre o cmd com o caminho deste arquivo em cmdcmdline.
-rem Num prompt ja aberto, cmdcmdline nao contem esse caminho: sem pause.
-echo %cmdcmdline% | find /I "%~f0" >nul
-if not errorlevel 1 pause
+:fim
+echo.
+pause
+endlocal
 
-exit /b %RC%

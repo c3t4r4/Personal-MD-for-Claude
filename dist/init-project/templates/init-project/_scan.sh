@@ -218,9 +218,19 @@ scan_projeto() {
   local locks
   locks=$(find . -maxdepth 3 \( $PRUNE \) -prune -o -type f \( \
       -name package-lock.json -o -name yarn.lock -o -name pnpm-lock.yaml \
-      -o -name bun.lockb -o -name poetry.lock -o -name Cargo.lock -o -name composer.lock \
+      -o -name bun.lockb -o -name bun.lock -o -name poetry.lock -o -name uv.lock \
+      -o -name Cargo.lock -o -name composer.lock -o -name go.sum -o -name Pipfile.lock \
+      -o -name Gemfile.lock \
     \) -print 2>/dev/null | sed 's|^\./||' | sort)
   [ -n "$locks" ] && printf '%s\n' "$locks"
+
+  echo
+  echo "[QUALIDADE]"
+  for f in biome.json biome.jsonc ruff.toml lefthook.yml .pre-commit-config.yaml \
+    compose.yaml compose.yml docker-compose.yml LICENSE LICENSE.md CHANGELOG.md; do
+    echo "$f: $(existe "$f")"
+  done
+  echo ".github/workflows/: $(existe .github/workflows)"
 
   echo
   echo "[DOCKER]"

@@ -17,7 +17,7 @@ Garantir que toda tarefa relevante seja planejada, implementada, validada, testa
 9. Security Specialist.
 10. Correções, se necessárias.
 11. Nova validação.
-12. Sincronização obrigatória de documentação — os onze documentos avaliados, os impactados atualizados ou criados, os demais declarados `sem alteração` ou `n/a`.
+12. Sincronização obrigatória de documentação — os doze documentos avaliados, os impactados atualizados ou criados, os demais declarados `sem alteração` ou `n/a`.
 
 ## Quem executa cada papel
 
@@ -63,7 +63,7 @@ Responsabilidades:
 - Criar um plano curto em `.claude/plans/`.
 - Identificar riscos técnicos e de segurança.
 - Listar os IDs das regras que serão criadas ou alteradas.
-- Preencher no plano a seção `## Sincronização de documentação` com o estado **previsto** dos onze documentos.
+- Preencher no plano a seção `## Sincronização de documentação` com o estado **previsto** dos doze documentos.
 - Definir critérios de aceite.
 
 O nome do plano deve seguir:
@@ -104,8 +104,9 @@ Conforme a seção `Sincronização obrigatória de documentação` de `~/.claud
 | `docs/Progresso.md` | **sempre** — toda tarefa concluída gera uma linha | nunca `sem alteração` |
 | `docs/Memoria.md` | aprendizado não óbvio, armadilha de ambiente, comando descoberto ou decisão com motivo | `sem alteração` |
 | `docs/Harness.md` | papel, agente, fluxo de aprovação ou ferramenta do harness mudou | `sem alteração` |
+| `README.md` | nome, propósito, instruções de instalação/uso, stack, comandos principais, configuração ou licença do projeto mudou | `sem alteração` |
 
-`docs/arquitetura.html` é o companion renderizado de `docs/Arquitetura.md`, gerado pela skill `archify`. Não é um documento novo — não altera a contagem dos onze — e é regenerado sob o mesmo gatilho da linha acima. Skill `archify` ausente degrada (HTML fica pendente, registrado no resumo da tarefa), nunca bloqueia.
+`docs/arquitetura.html` é o companion renderizado de `docs/Arquitetura.md`, gerado pela skill `archify`. Não é um documento novo — não altera a contagem dos doze — e é regenerado sob o mesmo gatilho da linha acima. Skill `archify` ausente degrada (HTML fica pendente, registrado no resumo da tarefa), nunca bloqueia.
 
 `sem alteração` é julgamento declarado, não silêncio. Documento `atualizado` ganha linha datada no seu `## Histórico`; documento `sem alteração` não recebe linha.
 
@@ -293,7 +294,7 @@ A tarefa somente está concluída quando:
 - Tester = `APPROVED`;
 - Security Specialist = `APPROVED`;
 - testes aplicáveis foram executados;
-- a sincronização obrigatória de documentação foi concluída, com os onze documentos avaliados e a tabela preenchida com o estado real.
+- a sincronização obrigatória de documentação foi concluída, com os doze documentos avaliados e a tabela preenchida com o estado real.
 
 Nenhum documento pode ficar sem estado declarado. `sem alteração` é resposta válida; omissão não é.
 
