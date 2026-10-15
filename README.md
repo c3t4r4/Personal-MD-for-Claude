@@ -8,15 +8,17 @@ Empacota o comando `/init-project` do Claude Code (`~/.claude/CLAUDE.md` + `comm
 
 ## Os 18 arquivos empacotados
 
-| Arquivo                                            | Papel                                                                                                                                                                                                               |
-| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `CLAUDE.md`                                        | Instruções globais do usuário — `/init-project` as lê na FASE 1, antes de qualquer plano                                                                                                                            |
-| `commands/init-project.md`                         | O próprio comando: as 9 fases, modos (`--check`/`--update`/`--rag`/`--regras`), diagramas de decisão                                                                                                                |
-| `templates/init-project/_scan.sh`                  | Script de varredura (capacidades do ambiente, estrutura do projeto) — o único executável do pacote                                                                                                                  |
-| `templates/init-project/_capacidades.md`           | O que fazer quando falta MCP `claude-mem` (ou `ai-memory`), skill `graphify`, agentes do harness ou `ui-ux-pro-max`                                                                                                  |
-| `templates/init-project/_checklist-entrevista.md`  | Checklist de cobertura da entrevista com o usuário                                                                                                                                                                  |
-| `templates/init-project/_varredura-regras.md`      | Procedimento do modo `--regras` (varredura profunda de código)                                                                                                                                                      |
+| Arquivo                                            | Papel                                                                                                                                                                                                                                 |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CLAUDE.md`                                        | Instruções globais do usuário — `/init-project` as lê na FASE 1, antes de qualquer plano                                                                                                                                              |
+| `commands/init-project.md`                         | O próprio comando: as 9 fases, modos (`--check`/`--update`/`--rag`/`--regras`), diagramas de decisão                                                                                                                                  |
+| `templates/init-project/_scan.sh`                  | Script de varredura (capacidades do ambiente, estrutura do projeto) — o único executável do pacote                                                                                                                                    |
+| `templates/init-project/_capacidades.md`           | O que fazer quando falta MCP `claude-mem` (ou `ai-memory`), skill `graphify`, agentes do harness ou `ui-ux-pro-max`                                                                                                                   |
+| `templates/init-project/_checklist-entrevista.md`  | Checklist de cobertura da entrevista com o usuário                                                                                                                                                                                    |
+| `templates/init-project/_varredura-regras.md`      | Procedimento do modo `--regras` (varredura profunda de código)                                                                                                                                                                        |
 | `templates/init-project/*.md.tpl.md` (12 arquivos) | Templates de `CLAUDE.md`, `RegrasNegocio.md`, `Arquitetura.md`, `Organograma.md`, `RAG.md`, `Harness.md`, `Progresso.md`, `Memoria.md`, `API.md`, `Frontend.md`, `Auth.md`, `Infraestrutura.md` — gerados a cada projeto inicializado |
+
+## Os scripts
 
 ## Os scripts
 
