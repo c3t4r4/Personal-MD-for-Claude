@@ -1,24 +1,24 @@
 # initProjectsInstall
 
-Empacota o comando `/init-project` do Claude Code (`~/.claude/CLAUDE.md` + `commands/init-project.md` + `templates/init-project/*`) numa pasta simples, para copiar para outra máquina e instalar lá — sem depender de `zip`/`unzip`.
+Empacota o comando `/init-project` do Claude Code (`~/.claude/CLAUDE.md` + `commands/init-project.md` + `templates/init-project/*`) numa pasta simples, para copiar para outra máquina e instalar lá — sem depender de `zip`/`unzip`. Instalador disponível para macOS, Linux e Windows.
 
 ## Por que isso existe
 
-`/init-project` não é um arquivo isolado: ele lê `~/.claude/CLAUDE.md` (regras globais de governança) e depende de 15 arquivos de apoio em `~/.claude/templates/init-project/` (script de varredura, checklists, templates de documentação). Para levar o comando inteiro para uma máquina nova sem esquecer nenhuma peça, os dois scripts aqui automatizam isso.
+`/init-project` não é um arquivo isolado: ele lê `~/.claude/CLAUDE.md` (regras globais de governança) e depende de 16 arquivos de apoio em `~/.claude/templates/init-project/` (script de varredura, checklists, templates de documentação). Para levar o comando inteiro para uma máquina nova sem esquecer nenhuma peça, os scripts aqui automatizam isso — um par para empacotar/instalar via bash (macOS/Linux) e um instalador equivalente em PowerShell/`.cmd` para Windows.
 
-## Os 17 arquivos empacotados
+## Os 18 arquivos empacotados
 
 | Arquivo                                            | Papel                                                                                                                                                                                                               |
 | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `CLAUDE.md`                                        | Instruções globais do usuário — `/init-project` as lê na FASE 1, antes de qualquer plano                                                                                                                            |
 | `commands/init-project.md`                         | O próprio comando: as 9 fases, modos (`--check`/`--update`/`--rag`/`--regras`), diagramas de decisão                                                                                                                |
 | `templates/init-project/_scan.sh`                  | Script de varredura (capacidades do ambiente, estrutura do projeto) — o único executável do pacote                                                                                                                  |
-| `templates/init-project/_capacidades.md`           | O que fazer quando falta MCP `claude-mem`, skill `graphify`, agentes do harness ou `ui-ux-pro-max`                                                                                                                  |
+| `templates/init-project/_capacidades.md`           | O que fazer quando falta MCP `claude-mem` (ou `ai-memory`), skill `graphify`, agentes do harness ou `ui-ux-pro-max`                                                                                                  |
 | `templates/init-project/_checklist-entrevista.md`  | Checklist de cobertura da entrevista com o usuário                                                                                                                                                                  |
 | `templates/init-project/_varredura-regras.md`      | Procedimento do modo `--regras` (varredura profunda de código)                                                                                                                                                      |
-| `templates/init-project/*.md.tpl.md` (11 arquivos) | Templates de `CLAUDE.md`, `RegrasNegocio.md`, `Arquitetura.md`, `RAG.md`, `Harness.md`, `Progresso.md`, `Memoria.md`, `API.md`, `Frontend.md`, `Auth.md`, `Infraestrutura.md` — gerados a cada projeto inicializado |
+| `templates/init-project/*.md.tpl.md` (12 arquivos) | Templates de `CLAUDE.md`, `RegrasNegocio.md`, `Arquitetura.md`, `Organograma.md`, `RAG.md`, `Harness.md`, `Progresso.md`, `Memoria.md`, `API.md`, `Frontend.md`, `Auth.md`, `Infraestrutura.md` — gerados a cada projeto inicializado |
 
-## Os dois scripts
+## Os scripts
 
 ### `package-init-project.sh`
 
@@ -51,6 +51,16 @@ Roda na máquina de **destino** (nova ou já existente).
 install-init-project.sh [caminho/para/pasta-do-pacote]
 ```
 
+### `install-init-project.ps1` / `install-init-project.cmd` (Windows)
+
+Mesmo comportamento do `install-init-project.sh` — mesma lista de 18 arquivos, mesmo fluxo de pergunta `[s/N/d=ver diff]`, mesmo relatório final — só que em PowerShell. `install-init-project.cmd` é um atalho fino para quem prefere clicar duas vezes em vez de abrir o PowerShell manualmente; ele só repassa os argumentos para o `.ps1` com `-ExecutionPolicy Bypass` (não altera a política de execução do sistema, só a dessa chamada).
+
+```powershell
+.\install-init-project.ps1 [caminho\para\pasta-do-pacote]
+```
+
+Destino: `$HOME\.claude` (equivalente ao `~/.claude` do macOS/Linux). A seção "Agentes, skills, plugins e marketplaces" da verificação de componentes depende de `bash` no PATH (Git for Windows ou WSL) para rodar `_scan.sh capacidades` — sem ele, essa parte do relatório fica `indisponível`, mas a instalação dos arquivos em si não depende de bash.
+
 ## Verificação de componentes (ao final da instalação)
 
 Depois de copiar os arquivos, o instalador informa — sem nunca bloquear a instalação — se os componentes que o `/init-project` usa estão presentes na máquina de destino:
@@ -65,11 +75,14 @@ Qualquer coisa ausente aparece no relatório como `ausente`/`indisponivel`, nunc
 
 1. Na máquina de origem: `~/.claude/initProjectsInstall/package-init-project.sh` → gera `dist/init-project/`.
 2. Copie a pasta `dist/init-project/` inteira para a máquina nova, por qualquer meio (USB, `rsync`, AirDrop, etc.).
-3. Na máquina nova, rode `install-init-project.sh <caminho-da-pasta-copiada>` — ou coloque a pasta em `~/.claude/initProjectsInstall/dist/init-project/` e rode sem argumento.
+3. Na máquina nova:
+   - macOS/Linux: rode `install-init-project.sh <caminho-da-pasta-copiada>` — ou coloque a pasta em `~/.claude/initProjectsInstall/dist/init-project/` e rode sem argumento.
+   - Windows: rode `install-init-project.ps1 <caminho-da-pasta-copiada>` (ou dê duplo clique em `install-init-project.cmd`) — mesma convenção de pasta padrão, em `$HOME\.claude\initProjectsInstall\dist\init-project\`.
 4. Revise o relatório de verificação de componentes ao final e instale o que estiver faltando (RTK, plugins, skills).
 
 ## Garantias de segurança
 
-- Nunca sobrescreve um arquivo existente sem confirmação explícita (ou pula com segurança quando não há terminal interativo).
+- Nunca sobrescreve um arquivo existente sem confirmação explícita (ou pula com segurança quando não há terminal interativo) — vale para os dois instaladores, bash e PowerShell.
 - Checa a integridade dos 18 arquivos antes de instalar qualquer coisa — aborta sem copiar nada se faltar algum.
 - Nenhuma etapa depende de rede, exceto a instalação opcional dos componentes listados no relatório final (decisão do usuário, não automática).
+- `install-init-project.cmd` só repassa argumentos para o `.ps1`; não baixa, não instala e não muda configuração nenhuma por conta própria.

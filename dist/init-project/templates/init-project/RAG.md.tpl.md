@@ -12,7 +12,7 @@ Estado detectado em [DATA]. Ambiente muda; reconferir com `_scan.sh capacidades`
 
 | Capacidade | Situação | Uso neste projeto | Fallback em uso |
 | --- | --- | --- | --- |
-| MCP `claude-mem` | [DISPONÍVEL / INDISPONÍVEL] | Base — observações, corpora e busca AST | Glob/Grep com escopo restrito |
+| MCP de memória (`claude-mem` / `ai-memory` / ambos / nenhum) | [DISPONÍVEL / INDISPONÍVEL / PARCIAL] | Base — observações, corpora e busca AST (claude-mem) ou wiki versionada e handoff (ai-memory) | Glob/Grep com escopo restrito |
 | skill `graphify` | [DISPONÍVEL / INDISPONÍVEL / NÃO USADO] | Opcional — grafo de conhecimento sob demanda | segue sem grafo |
 | agentes do harness | [DISPONÍVEIS / PARCIAIS / AUSENTES] | Papéis de `docs/Harness.md` com contexto isolado | papéis executados inline |
 | skill `ui-ux-pro-max` | [DISPONÍVEL / INDISPONÍVEL / NÃO APLICÁVEL] | Apoio ao `docs/Frontend.md` | design system vindo da entrevista |
@@ -31,6 +31,7 @@ Se nenhum backend de recuperação estiver disponível, registrar aqui e usar Gl
 | `[PROJETO]-regras` | corpus claude-mem | Filtrado por `types=decision,feature` — apoio ao `RegrasNegocio.md` | `build_corpus` |
 | Código-fonte | busca AST sob demanda | Símbolos, funções, classes | Não exige build — `smart_search` lê o disco |
 | `graphify-out/` | grafo | [O QUE FOI GRAFICADO] | `/graphify [CAMINHO] --update` |
+| wiki ai-memory (`[WORKSPACE]/[PROJETO]`) | wiki ai-memory (opcional) | Páginas de decisão, convenções e handoff | `memory_write_page` (só a pedido explícito) |
 
 ---
 
@@ -39,7 +40,7 @@ Se nenhum backend de recuperação estiver disponível, registrar aqui e usar Gl
 **Ordem obrigatória.** Só avançar para o passo seguinte quando o anterior não responder.
 
 1. **Pergunta sobre comportamento ou regra de negócio** → `docs/RegrasNegocio.md`, pelo ID da regra ou pelo índice de telas.
-2. **Pergunta sobre histórico, decisão anterior ou bug já resolvido** → `observation_search`; se houver corpus primado, `query_corpus`.
+2. **Pergunta sobre histórico, decisão anterior ou bug já resolvido** → `observation_search`/`query_corpus` (claude-mem) ou `memory_query` (ai-memory).
 3. **Localizar código** → `smart_search` (encontra o símbolo) → `smart_outline` (estrutura do arquivo) → `smart_unfold` (só o trecho necessário).
 4. **Leitura completa de arquivos** — somente depois dos passos acima, e apenas nos arquivos identificados.
 

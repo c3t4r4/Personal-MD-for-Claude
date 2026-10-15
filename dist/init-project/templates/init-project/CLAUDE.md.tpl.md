@@ -26,7 +26,9 @@ Antes de qualquer plano, leitura de código, comando ou alteração:
 - Consultar `docs/RegrasNegocio.md` antes de alterar qualquer comportamento do sistema.
 - Atualizar `docs/RegrasNegocio.md` sempre que o comportamento mudar.
 - Seguir o protocolo retrieval-first de `docs/RAG.md` antes de leitura ampla de código.
-- Utilizar `claude.mem` no início da sessão e após tarefas significativas.
+- Utilizar o backend de memória detectado (`claude-mem`, `ai-memory` ou ambos) no início da sessão e após tarefas significativas.
+- Seguir as preferências de stack por ecossistema de `~/.claude/CLAUDE.md` — sugerir e confirmar, nunca aplicar sem autorização.
+- Consultar a seção `Performance` de `~/.claude/CLAUDE.md` antes de decidir estrutura de Docker, paginação de API ou carregamento de frontend.
 - Utilizar RTK conforme as instruções globais.
 - Iniciar tarefas não triviais em modo plan.
 - Criar planos em `.claude/plans/`, sempre na raiz deste projeto (onde está este arquivo), nunca em um subdiretório de trabalho.
@@ -74,7 +76,7 @@ Antes de qualquer plano, leitura de código, comando ou alteração:
 
 Regra herdada de `~/.claude/CLAUDE.md`, seção `Sincronização obrigatória de documentação`, que é a fonte única. Replicada aqui para leitura sem o arquivo global à mão.
 
-Toda tarefa que altere código, configuração, schema, API, autenticação, infraestrutura ou documentação técnica somente está concluída depois que os onze documentos abaixo forem avaliados e cada um receber um estado explícito: `atualizado`, `criado`, `sem alteração` ou `n/a`.
+Toda tarefa que altere código, configuração, schema, API, autenticação, infraestrutura ou documentação técnica somente está concluída depois que os doze documentos abaixo forem avaliados e cada um receber um estado explícito: `atualizado`, `criado`, `sem alteração` ou `n/a`.
 
 A sincronização é etapa de **toda implementação**. `/init-project` cria e audita a estrutura; ele não é o mecanismo de manutenção.
 
@@ -91,10 +93,12 @@ A sincronização é etapa de **toda implementação**. `/init-project` cria e a
 | `docs/Progresso.md` | **sempre** — toda tarefa concluída gera uma linha | nunca `sem alteração` |
 | `docs/Memoria.md` | aprendizado não óbvio, armadilha de ambiente, comando descoberto ou decisão com motivo | `sem alteração` |
 | `docs/Harness.md` | papel, agente, fluxo de aprovação ou ferramenta do harness mudou | `sem alteração` |
+| `README.md` | nome, propósito, instruções de instalação/uso, stack, comandos principais, configuração ou licença do projeto mudou | `sem alteração` |
 
 Como ler a tabela:
 
-- `docs/arquitetura.html` é o companion renderizado de `docs/Arquitetura.md`, gerado pela skill `archify`. Não é um documento novo — não altera a contagem dos onze — e é regenerado sob o mesmo gatilho da linha acima. Skill `archify` ausente degrada (HTML fica pendente, registrado no resumo da tarefa), nunca bloqueia.
+- `docs/arquitetura.html` é o companion renderizado de `docs/Arquitetura.md`, gerado pela skill `archify`. Não é um documento novo — não altera a contagem dos doze — e é regenerado sob o mesmo gatilho da linha acima. Skill `archify` ausente degrada (HTML fica pendente, registrado no resumo da tarefa), nunca bloqueia.
+- `README.md` segue a regra dos documentos permanentes — nunca `n/a`. Se estiver ausente, criar com a estrutura mínima: título e propósito, requisitos, instalação, uso/comandos, configuração (nomes de variável, nunca valor), estrutura de diretórios, testes, links para `docs/*` e licença.
 - `sem alteração` é julgamento declarado, não silêncio. Documento não avaliado bloqueia a conclusão da tarefa.
 - `n/a` vale apenas para documento condicional que este projeto legitimamente não tem.
 - Gatilho disparado em documento condicional ausente **obriga a criar o documento**, a partir de `~/.claude/templates/init-project/<Nome>.md.tpl.md`.
@@ -154,6 +158,7 @@ Documentos permanentes — sempre existem e sempre entram na sincronização:
 - Harness: `docs/Harness.md`
 - Progresso: `docs/Progresso.md`
 - Memória: `docs/Memoria.md`
+- README do projeto: `README.md`
 
 Documentos condicionais — existem quando o projeto os justifica e devem ser **criados** assim que o gatilho correspondente disparar:
 

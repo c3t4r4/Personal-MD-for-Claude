@@ -118,7 +118,7 @@ Se o `CLAUDE.md` local definir uma ordem mais específica, respeitá-la depois d
 
 ## Memória do projeto
 
-Utilizar automaticamente a skill `claude.mem` no início de cada sessão, sem solicitar autorização.
+Utilizar automaticamente o backend de memória disponível (`claude-mem`, `ai-memory` ou ambos) no início de cada sessão, sem solicitar autorização. Com apenas `ai-memory` presente, usar o mapa de ferramentas equivalentes de `_capacidades.md`.
 
 Registrar na memória:
 
@@ -140,7 +140,7 @@ Não registrar:
 - Dados pessoais desnecessários.
 - Segredos de infraestrutura.
 
-Ao final de tarefas significativas, atualizar a memória com os aprendizados relevantes.
+Ao final de tarefas significativas, atualizar a memória com os aprendizados relevantes. No `ai-memory`, usar `memory_write_page` apenas quando o usuário pedir explicitamente para lembrar de algo.
 
 ---
 
@@ -176,7 +176,7 @@ Registrar em `docs/RegrasNegocio.md`, e não em `docs/Memoria.md`: fluxos de tel
 
 Esta seção é a **fonte única** da regra. A tabela de gatilhos é replicada, palavra por palavra, em `templates/init-project/CLAUDE.md.tpl.md` e `templates/init-project/Harness.md.tpl.md`, para que um projeto seja legível sem o arquivo global à mão; `commands/init-project.md` apenas aponta para cá e replica a tabela do plano. Ao alterar a tabela aqui, propagar às cópias na mesma tarefa.
 
-Toda tarefa que altere código, configuração, schema, API, autenticação, infraestrutura ou documentação técnica somente está concluída depois que os onze documentos de governança forem avaliados e cada um receber um estado explícito: `atualizado`, `criado`, `sem alteração` ou `n/a`.
+Toda tarefa que altere código, configuração, schema, API, autenticação, infraestrutura ou documentação técnica somente está concluída depois que os doze documentos de governança forem avaliados e cada um receber um estado explícito: `atualizado`, `criado`, `sem alteração` ou `n/a`.
 
 A sincronização é etapa de **toda implementação**. `/init-project` cria e audita a estrutura; ele não é o mecanismo de manutenção. Documentação desatualizada nunca deve esperar pela próxima execução daquele comando.
 
@@ -195,10 +195,12 @@ A sincronização é etapa de **toda implementação**. `/init-project` cria e a
 | `docs/Progresso.md`      | **sempre** — toda tarefa concluída gera uma linha                                                                                                                           | nunca `sem alteração`   |
 | `docs/Memoria.md`        | aprendizado não óbvio, armadilha de ambiente, comando descoberto ou decisão com motivo                                                                                      | `sem alteração`         |
 | `docs/Harness.md`        | papel, agente, fluxo de aprovação ou ferramenta do harness mudou                                                                                                            | `sem alteração`         |
+| `README.md`              | nome, propósito, instruções de instalação/uso, stack, comandos principais, configuração ou licença do projeto mudou                                                        | `sem alteração`         |
 
 ### Como ler a tabela
 
-- **`docs/arquitetura.html` é o companion renderizado de `docs/Arquitetura.md`**, gerado pela skill `archify`. Não é um documento novo — não altera a contagem dos onze — e é regenerado sob o mesmo gatilho da linha acima. Skill `archify` ausente degrada (HTML fica pendente, registrado no resumo da tarefa), nunca bloqueia.
+- **`docs/arquitetura.html` é o companion renderizado de `docs/Arquitetura.md`**, gerado pela skill `archify`. Não é um documento novo — não altera a contagem dos doze — e é regenerado sob o mesmo gatilho da linha acima. Skill `archify` ausente degrada (HTML fica pendente, registrado no resumo da tarefa), nunca bloqueia.
+- **`README.md` segue a regra dos documentos permanentes — nunca `n/a`.** Se estiver ausente, criar com a estrutura mínima: título e propósito, requisitos, instalação, uso/comandos, configuração (nomes de variável, nunca valor), estrutura de diretórios, testes, links para `docs/*` e licença.
 - **`sem alteração` é julgamento declarado, não silêncio.** Documento não avaliado bloqueia a conclusão da tarefa.
 - **`n/a` vale apenas para documento condicional que o projeto legitimamente não tem** — sem frontend, sem API própria, sem Docker.
 - **Gatilho disparado em documento condicional ausente obriga a criar o documento**, a partir de `~/.claude/templates/init-project/<Nome>.md.tpl.md`. O primeiro endpoint de um projeto sem `docs/API.md` cria o `docs/API.md`; a primeira tela cria o `docs/Frontend.md`; o primeiro `Dockerfile` cria o `docs/Infraestrutura.md`.
@@ -207,7 +209,7 @@ A sincronização é etapa de **toda implementação**. `/init-project` cria e a
 
 ### Onde a tabela aparece
 
-O mesmo conjunto de onze linhas é preenchido três vezes, com propósitos diferentes:
+O mesmo conjunto de doze linhas é preenchido três vezes, com propósitos diferentes:
 
 1. **No plano**, pelo Planner, com o estado **previsto**.
 2. **Na implementação**, pelo Coder, com o estado **real**.
@@ -220,7 +222,7 @@ O mesmo conjunto de onze linhas é preenchido três vezes, com propósitos difer
 Antes de leitura ampla de código, seguir a ordem definida em `docs/RAG.md`:
 
 1. `docs/RegrasNegocio.md` — perguntas sobre comportamento ou regra de negócio.
-2. `observation_search` ou `query_corpus` — histórico, decisões anteriores, bugs já resolvidos.
+2. `observation_search`/`query_corpus` (claude-mem) ou `memory_query` (ai-memory) — histórico, decisões anteriores, bugs já resolvidos.
 3. `smart_search` → `smart_outline` → `smart_unfold` — localizar o símbolo antes de abrir o arquivo.
 4. Leitura completa de arquivos — apenas nos arquivos identificados nos passos anteriores.
 
@@ -358,6 +360,7 @@ Estado **previsto** de cada documento ao fim desta tarefa. Seção obrigatória 
 | `docs/Progresso.md`      | atualizado                                  | sempre                           |
 | `docs/Memoria.md`        | [ESTADO]                                    | [MOTIVO]                         |
 | `docs/Harness.md`        | [ESTADO]                                    | [MOTIVO]                         |
+| `README.md`              | [ESTADO]                                    | [MOTIVO]                         |
 
 ## Validação
 
@@ -395,7 +398,7 @@ A tarefa somente estará concluída quando:
 - Tester retornar `APPROVED`;
 - Security Specialist retornar `APPROVED`;
 - os testes aplicáveis forem executados;
-- a sincronização obrigatória de documentação estiver concluída, com os onze documentos avaliados e a tabela de gatilhos preenchida com o estado real.
+- a sincronização obrigatória de documentação estiver concluída, com os doze documentos avaliados e a tabela de gatilhos preenchida com o estado real.
 
 Nenhum documento pode ficar sem estado declarado. `sem alteração` é resposta válida; omissão não é.
 
@@ -440,7 +443,7 @@ O Planner deve:
 - Identificar impactos em API, frontend, autenticação, banco e infraestrutura.
 - Definir critérios objetivos de aceite.
 - Criar plano curto em `.claude/plans/`.
-- Preencher a seção `## Sincronização de documentação` do plano com o estado **previsto** dos onze documentos, indicando quais serão criados por gatilho em documento condicional ausente.
+- Preencher a seção `## Sincronização de documentação` do plano com o estado **previsto** dos doze documentos, indicando quais serão criados por gatilho em documento condicional ausente.
 
 Não iniciar implementação antes de concluir o plano.
 
@@ -460,7 +463,7 @@ O Coder deve:
 - Consultar `docs/Auth.md` antes de alterar autenticação.
 - Consultar `docs/Infraestrutura.md` antes de alterar Docker ou deploy.
 - Criar ou atualizar testes.
-- Executar a sincronização obrigatória de documentação ao fim da implementação, percorrendo os onze documentos da tabela de gatilhos.
+- Executar a sincronização obrigatória de documentação ao fim da implementação, percorrendo os doze documentos da tabela de gatilhos.
 - Criar o documento condicional ausente cujo gatilho disparou, a partir do template correspondente.
 - Preencher a tabela de sincronização com o estado **real**, e não com o previsto pelo plano; divergência entre previsto e real deve ser explicada.
 - Não incluir segredos.
@@ -745,6 +748,36 @@ A exceção são skills cujo uso automático esteja definido pelo projeto.
 
 ---
 
+## Performance
+
+Ao avaliar desempenho como parte do critério de aceite (build, API ou frontend), considerar a skill `performance-optimization` e, para frontend, a skill `webperf` ou o agente `web-performance-auditor` (Core Web Vitals) — quando instalados. Seguir a mesma regra de Skills: informar o motivo, explicar o benefício e perguntar antes de usar.
+
+### Docker
+
+- Preferir builds multi-stage, separando dependências de build do artefato final.
+- Manter `.dockerignore` atualizado, excluindo `node_modules`, `.git`, artefatos de build e arquivos temporários do contexto de build.
+- Ordenar `COPY`/`ADD` do menos ao mais volátil: copiar manifestos de dependência (`package.json`, `requirements.txt`, `go.mod`, etc.) e instalar dependências antes de copiar o código-fonte, para aproveitar o cache de camadas.
+- Preferir imagens base `slim`/`alpine`/distroless, sempre com versão fixa — nunca `latest`.
+
+### API
+
+- Definir limite padrão de paginação em endpoints de listagem; nunca retornar coleção completa sem paginação.
+- Evitar N+1 em endpoints de listagem — carregar relações em lote (eager loading/batching) em vez de uma consulta por item.
+- Indexar colunas usadas em filtros e ordenações frequentes.
+
+### Frontend
+
+- Code splitting e lazy loading de rotas.
+- Definir orçamento de bundle (budget) e monitorar.
+- Otimizar imagens (formato, tamanho, lazy loading).
+
+### Geral
+
+- Medir antes de otimizar — nunca otimizar às cegas.
+- Cache com invalidação explícita; nunca cache sem estratégia de invalidação.
+
+---
+
 ## Autenticação e segurança
 
 Quando houver armazenamento local de senhas:
@@ -822,8 +855,36 @@ Se identificar uma skill claramente adequada:
 
 Exceções:
 
-- `claude.mem`: utilizar automaticamente no início da sessão.
+- MCP de memória (`claude-mem`, `ai-memory` ou ambos): utilizar automaticamente no início da sessão.
 - Skills de UI/UX: podem ser utilizadas automaticamente quando o contexto for claramente frontend e não houver padrão conflitante no projeto.
+
+---
+
+## Preferências de stack por ecossistema
+
+Quando o projeto ainda não tiver decidido uma ferramenta para a função abaixo — projeto novo ou lacuna real, nunca para substituir o que já está em uso:
+
+1. Informar a ferramenta preferida e o motivo.
+2. Explicar o benefício.
+3. Perguntar se o usuário deseja adotá-la antes de aplicar.
+
+| Ecossistema / função | Preferência | Motivo |
+| --- | --- | --- |
+| Python — pacotes e ambiente | `uv` (`pyproject.toml`, `uv.lock`, `uv run`) | resolução e instalação muito mais rápidas, lock determinístico |
+| Python — lint/format/testes | `ruff`, `pytest`, `pyright` | uma ferramenta para lint e format; typecheck rápido |
+| CSS / estilização | Tailwind CSS (+ shadcn/ui quando houver componentes) | utility-first, evita CSS solto e inconsistente entre telas |
+| Node/TypeScript — gerenciador de pacotes | `pnpm` | instalação mais rápida, menos duplicação de `node_modules` que npm/yarn |
+| Node/TypeScript — lint e formatação | Biome | lint + format unificados numa ferramenta só, mais rápida que ESLint + Prettier separados |
+| Node/TypeScript — testes | Vitest (unitário) e Playwright (e2e) | rápidos e integrados ao ecossistema Vite |
+| PHP | PHP 8.3+, Laravel, Pest, Pint, Larastan | padrão do ecossistema, análise estática integrada |
+| Go — formatação e lint | `gofumpt` + `golangci-lint` | mais estrito que `gofmt`; agrega os principais linters numa só execução |
+| Rust | `cargo clippy` + `rustfmt` | nativos da toolchain |
+| .NET/C# — formatação e análise estática | `dotnet format` + analisadores Roslyn ativos no `.editorconfig` | nativos do SDK, sem dependência externa |
+| Dart/Flutter | `dart format` + `dart analyze` (`very_good_analysis`) | regras consistentes sem configuração manual |
+| Banco de dados | PostgreSQL com migrações versionadas; SQLite para local/embarcado | padrão aberto e robusto |
+| Qualidade geral | `.editorconfig`, `shellcheck` em scripts, Conventional Commits, `LICENSE` | consistência e profissionalismo mínimos entre projetos |
+
+Projeto que já usa outra ferramenta para a mesma função: respeitar a convenção existente — nunca propor migração sem pedido explícito do usuário. Se o usuário recusar a preferência num projeto novo, registrar a escolha como ADR em `docs/Arquitetura.md` — é rastreabilidade, não penalidade.
 
 ---
 
@@ -850,7 +911,7 @@ Ao concluir uma tarefa, informar:
 - Resultado do Validator.
 - Resultado do Tester.
 - Resultado do Security Specialist.
-- Tabela de sincronização de documentação, com o estado real dos onze documentos — inclusive os `sem alteração` e os `n/a`.
+- Tabela de sincronização de documentação, com o estado real dos doze documentos — inclusive os `sem alteração` e os `n/a`.
 - Pendências, incluindo regras `⚠ inferida` aguardando confirmação.
 - Riscos conhecidos.
 - Sugestões não aplicadas.
